@@ -64,7 +64,22 @@ classdef trajectory
         function d = distance(tr1,tr2)
             %function d = distance(tr1,tr2)
             %  Calculate distance between trajectories
+            %  Output d: double
             d = distance(tr1.Position,tr2.Position);
+        end
+        
+        function d = minus(tr1,tr2)
+            %function d = minus(tr1,tr2)
+            %  Calculate difference between trajectories
+            %  Output d: vec3d object
+            d = minus(tr1.Position, tr2.Position);
+        end
+        
+        function s = plus(tr1,tr2)
+            %function d = minus(tr1,tr2)
+            %  Calculate difference between trajectories
+            %  Output s: vec3d object
+            s = plus(tr1.Position, tr2.Position);
         end
         
     end

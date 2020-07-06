@@ -11,6 +11,12 @@ classdef vec3d
         e = zeros(3,1);
     end
     
+    properties (Dependent)
+        x
+        y
+        z
+    end
+    
     methods
         function p = vec3d(varargin)
             %function p = vec3d(vec)
@@ -65,7 +71,18 @@ classdef vec3d
             if sqz
                 p   = squeeze( p );
             end
-            
+        end %vec3d
+        
+        function x = get.x(p)
+            x = p.e(1);
+        end
+        
+        function y = get.y(p)
+            y = p.e(2);
+        end
+        
+        function z = get.z(p)
+            z = p.e(3);
         end
         
         function d = distance(p1,p2)

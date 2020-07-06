@@ -4,6 +4,8 @@ classdef mocapdata
     
     properties
         Name = ''; % File, Timestamp, StartFrame, Frames, FrameRate
+        Frames = [];
+        FrameRate = [];
         Trajectories = trajectory.empty()
         RigidBodies = rigidbody.empty()
         Skeletons = skeleton.empty()
@@ -23,31 +25,31 @@ classdef mocapdata
             qtm_header_flds = {'File','Timestamp',...
                 'StartFrame','Frames','FrameRate'};
             
-            switch nargin
-                case 0
-                    return; % Return with default (empty) data
-                    
-                case 1
-                    % Parse data from QTM mat file
-                    if ischar(varargin{1})
-                        qtm = qtmread(qtm);
-                    elseif isstruct(varargin{1}) && ...
-                            sum(isfield(varargin{1},qtm_header_flds)) == length(qtm_header_flds)
-                        qtm = varargin{1};
-                    end
-                    
-                    % Parse trajectories
-                    if isfield(qtm,'Trajectories') && ...
-                            isfield(qtm.Trajectories,'Labeled')
-                        traj_array = parse_trajectories(qtm.Trajectories.Labeled);
-                        
-                        mc.TrajAdmin = labeladmin({traj_array.Label});
-                        mc.Trajectories = traj_array;
-                    end
-                    
-                    % Similar for rigid bodies and skeletons
-                    
+            if nargin<1, return; end % Return with default (empty) data
+            
+            % Parse data from QTM mat file
+            if ischar(varargin{1})
+                qtm = qtmread(varargin{1});
+            elseif isstruct(varargin{1}) && ...
+                    sum(isfield(varargin{1},qtm_header_flds)) == length(qtm_header_flds)
+                qtm = varargin{1};
             end
+            
+            % File info
+            [~,mc.Name] = fileparts(qtm.File);
+            mc.Frames = qtm.Frames;
+            mc.FrameRate = qtm.FrameRate;
+            
+            % Parse trajectories
+            if isfield(qtm,'Trajectories') && ...
+                    isfield(qtm.Trajectories,'Labeled')
+                traj_array = parse_trajectories(qtm.Trajectories.Labeled);
+                
+                mc.TrajAdmin = labeladmin({traj_array.Label});
+                mc.Trajectories = traj_array;
+            end
+            
+            % Similar for rigid bodies and skeletons
             
         end
         

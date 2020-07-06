@@ -7,11 +7,11 @@ classdef vec3d
     %     (https://www.mathworks.com/matlabcentral/fileexchange/33341-quaternion),
     %     MATLAB Central File Exchange. Retrieved May 27, 2020.
     
-    properties  (SetAccess = protected)
+    properties  (SetAccess = protected, Hidden = true)
         e = zeros(3,1);
     end
     
-    properties (Dependent)
+    properties (Dependent = true)
         x
         y
         z
@@ -85,26 +85,6 @@ classdef vec3d
             z = p.e(3);
         end
         
-        function d = distance(p1,p2)
-            %function d = distance(p1,p2)
-            %   Calculate distance between p1 and p2.
-            %   When p1 and p2 are not the same size calculation uses
-            %   binary singleton expansion (for example
-            %   distance between array p1 to fixed point p2).
-            d = norm(p2-p1);
-        end
-        
-        function pr = rotate_vec3d(p,q)
-            %function pr = rotate_vec3d(p,q)
-            %   Rotates vector using quaternion.RotateVector
-            %   When p and q are not the same size calculation uses binary
-            %   singleton expansion (for example rotation of array p
-            %   relative to fixed reference).
-            sp = size(p);
-            pr = vec3d(q.RotateVector(double(p))); % Use quaternion.RotateVector
-            pr = reshape(pr,sp);
-        end
-        
         % Overload standard methods
         function n = abs( p )
             n   = p.norm;
@@ -173,6 +153,15 @@ classdef vec3d
             end
         end % diff
         
+        function d = distance( p1, p2 )
+            %function d = distance( p1, p2 )
+            %   Calculate distance between p1 and p2.
+            %   When p1 and p2 are not the same size calculation uses
+            %   binary singleton expansion (for example
+            %   distance between array p1 to fixed point p2).
+            d = norm( p1 - p2 );
+        end
+        
         function d = dot( p1, p2 )
             % function d = dot( p1, p2 )
             % vec3d element dot product: d = dot( p1.e, p2.e ), using binary
@@ -194,12 +183,6 @@ classdef vec3d
             l   = reshape( any( isnan( d ), 1 ), size( p ));
         end % isnan
         
-        function pm = mean( p )
-            % To be added (including all mean arguments)
-            error('vec3d:mean',...
-                'Method not implemented yet.')
-        end
-        
         function p3 = minus( p1, p2 )
             si1 = size( p1 );
             si2 = size( p2 );
@@ -218,7 +201,17 @@ classdef vec3d
                 error( 'vec3d:minus:baddims', ...
                     'Matrix dimensions must agree' );
             end
-            d3 = bsxfun( @minus, [p1.e], [p2.e] );
+            if isa(p1,'vec3d')
+                arg1 = [p1.e];
+            elseif isnumeric(p1)
+                arg1 = p1;
+            end
+            if isa(p2,'vec3d')
+                arg2 = [p2.e];
+            elseif isnumeric(p2)
+                arg2 = p2;
+            end
+            d3 = bsxfun( @minus, arg1, arg2 );
             p3 = vec3d(d3);
             p3 = reshape( p3, siz );
         end % minus
@@ -274,7 +267,17 @@ classdef vec3d
                 error( 'vec3d:plus:baddims', ...
                     'Matrix dimensions must agree' );
             end
-            d3 = bsxfun( @plus, [p1.e], [p2.e] );
+            if isa(p1,'vec3d')
+                arg1 = [p1.e];
+            elseif isnumeric(p1)
+                arg1 = p1;
+            end
+            if isa(p2,'vec3d')
+                arg2 = [p2.e];
+            elseif isnumeric(p2)
+                arg2 = p2;
+            end
+            d3 = bsxfun( @plus, arg1, arg2 );
             p3 = vec3d(d3);
             p3 = reshape( p3, siz );
         end % plus
@@ -297,6 +300,50 @@ classdef vec3d
             pq = vec3d(dq);
             pq = reshape( pq, sip );
         end % power
+        
+        function p3 = rdivide( p1, p2 )
+            si1 = size( p1 );
+            si2 = size( p2 );
+            ne1 = prod( si1 );
+            ne2 = prod( si2 );
+            if (ne1 == 0) || (ne2 == 0)
+                p3  = vec3d.empty;
+                return;
+            elseif ne1 == 1
+                siz = si2;
+            elseif ne2 == 1
+                siz = si1;
+            elseif isequal( si1, si2 )
+                siz = si1;
+            else
+                error( 'vec3d:times:baddims', ...
+                    'Matrix dimensions must agree' );
+            end
+            if isa(p1,'vec3d')
+                arg1 = [p1.e];
+            elseif isnumeric(p1)
+                arg1 = p1;
+            end
+            if isa(p2,'vec3d')
+                arg2 = [p2.e];
+            elseif isnumeric(p2)
+                arg2 = p2;
+            end
+            d3 = bsxfun( @rdivide, arg1, arg2 );
+            p3 = vec3d(d3);
+            p3 = reshape( p3, siz );
+        end
+        
+        function pr = rotate_vec3d(p,q)
+            %function pr = rotate_vec3d(p,q)
+            %   Rotates vector using quaternion.RotateVector
+            %   When p and q are not the same size calculation uses binary
+            %   singleton expansion (for example rotation of array p
+            %   relative to fixed reference).
+            sp = size(p);
+            pr = vec3d(q.RotateVector(double(p))); % Use quaternion.RotateVector
+            pr = reshape(pr,sp);
+        end
         
         function ps = sum( p, dim )
             % function ps = sum( p, dim )
@@ -327,6 +374,39 @@ classdef vec3d
             pr  = p.^0.5;
         end % sqrt
         
+        function p3 = times( p1, p2 )
+            si1 = size( p1 );
+            si2 = size( p2 );
+            ne1 = prod( si1 );
+            ne2 = prod( si2 );
+            if (ne1 == 0) || (ne2 == 0)
+                p3  = vec3d.empty;
+                return;
+            elseif ne1 == 1
+                siz = si2;
+            elseif ne2 == 1
+                siz = si1;
+            elseif isequal( si1, si2 )
+                siz = si1;
+            else
+                error( 'vec3d:times:baddims', ...
+                    'Matrix dimensions must agree' );
+            end
+            if isa(p1,'vec3d')
+                arg1 = [p1.e];
+            elseif isnumeric(p1)
+                arg1 = p1;
+            end
+            if isa(p2,'vec3d')
+                arg2 = [p2.e];
+            elseif isnumeric(p2)
+                arg2 = p2;
+            end
+            d3 = bsxfun( @times, arg1, arg2 );
+            p3 = vec3d(d3);
+            p3 = reshape( p3, siz );
+        end
+        
     end %methods
     
     methods(Static)
@@ -351,6 +431,48 @@ classdef vec3d
                 p = reshape(p,siz);
             end
         end % vec3d.zeros
+        
+        function p = ones( varargin )
+            % function q = vec3d.zeros( siz )
+            if isempty( varargin )
+                siz = [1 1];
+            elseif numel( varargin ) > 1
+                siz = [varargin{:}];
+            elseif isempty( varargin{1} )
+                siz = [0 0];
+            elseif numel( varargin{1} ) > 1
+                siz = varargin{1};
+            else
+                siz = [varargin{1} varargin{1}];
+            end
+            if prod( siz ) == 0
+                p = reshape( vec3d.empty, siz );
+            else
+                p = vec3d(ones([3 siz]));
+                p = reshape(p,siz);
+            end
+        end % vec3d.ones
+        
+        function p = nan( varargin )
+            % function q = vec3d.zeros( siz )
+            if isempty( varargin )
+                siz = [1 1];
+            elseif numel( varargin ) > 1
+                siz = [varargin{:}];
+            elseif isempty( varargin{1} )
+                siz = [0 0];
+            elseif numel( varargin{1} ) > 1
+                siz = varargin{1};
+            else
+                siz = [varargin{1} varargin{1}];
+            end
+            if prod( siz ) == 0
+                p = reshape( vec3d.empty, siz );
+            else
+                p = vec3d(nan([3 siz]));
+                p = reshape(p,siz);
+            end
+        end % vec3d.nan
         
     end % methods(Static)
 end % class def vec3d

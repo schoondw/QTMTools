@@ -68,18 +68,44 @@ classdef trajectory
             d = distance(tr1.Position,tr2.Position);
         end
         
-        function d = minus(tr1,tr2)
-            %function d = minus(tr1,tr2)
+        function v = minus(tr1,tr2)
+            %function v = minus(tr1,tr2)
             %  Calculate difference between trajectories
-            %  Output d: vec3d object
-            d = minus(tr1.Position, tr2.Position);
+            %  Output v: vec3d object
+            v = minus(tr1.Position, tr2.Position);
         end
         
-        function s = plus(tr1,tr2)
-            %function d = minus(tr1,tr2)
+        function v = plus(tr1,tr2)
+            %function v = plus(tr1,tr2)
             %  Calculate difference between trajectories
-            %  Output s: vec3d object
-            s = plus(tr1.Position, tr2.Position);
+            %  Output v: vec3d object
+            v = plus(tr1.Position, tr2.Position);
+        end
+        
+        function v = rdivide(arg1,arg2)
+            %function v = rdivide(arg1,arg2)
+            %  Calculate difference between trajectories
+            %  Output v: vec3d object
+            if isa(arg1,'trajectory')
+                arg1 = arg1.Position;
+            end
+            if isa(arg2,'trajectory')
+                arg2 = arg2.Position;
+            end
+            v = rdivide(arg1,arg2);
+        end
+        
+        function v = times(arg1,arg2)
+            %function v = times(arg1,arg2)
+            %  Calculate difference between trajectories
+            %  Output v: vec3d object
+            if isa(arg1,'trajectory')
+                arg1 = arg1.Position;
+            end
+            if isa(arg2,'trajectory')
+                arg2 = arg2.Position;
+            end
+            v = times(arg1,arg2);
         end
         
     end

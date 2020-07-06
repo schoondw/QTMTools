@@ -11,7 +11,7 @@ classdef mocapdata
         Skeletons = skeleton.empty()
     end
     
-    properties (Access = private)
+    properties (Access = private) % Label admin properties
         TrajAdmin = labeladmin()
         RBAdmin = labeladmin()
         SkelAdmin = labeladmin()

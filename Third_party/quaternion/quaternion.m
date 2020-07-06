@@ -174,9 +174,16 @@ classdef quaternion
 % Author:
 %  Mark Tincknell, MIT LL, 29 July 2011, revised 25 July 2017
 
-properties (SetAccess = protected)
+properties (SetAccess = protected, Hidden = true) % Modified by Erwin Schoonderwaldt: Hidden
     e   = zeros(4,1);
 end % properties
+
+properties (Dependent = true) % "Surface" properties for structure-like display, added by Erwin Schoonderwaldt
+    w
+    x
+    y
+    z
+end
 
 % Array constructors
 methods
@@ -299,6 +306,23 @@ methods
         end
     end % quaternion (constructor)
 
+% Access methods for "surface" properties [Added by Erwin Schoonderwaldt]
+    function w = get.w(q)
+        w = q.e(1);
+    end
+    
+    function x = get.x(q)
+        x = q.e(2);
+    end
+    
+    function y = get.y(q)
+        y = q.e(3);
+    end
+    
+    function z = get.z(q)
+        z = q.e(4);
+    end
+    
 % Ordinary methods
     function n = abs( q )
         n   = q.norm;
@@ -448,34 +472,34 @@ methods
         end
     end % diff
 
-    function display( q ) %#ok<DISPLAY>
-        if ~isequal( get(0,'FormatSpacing'), 'compact' )
-            disp(' ');
-        end
-        if isempty( q )
-            fprintf( '%s \t= ([]) + i([]) + j([]) + k([])\n', inputname(1) )
-            return;
-        end
-        siz = size( q );
-        nel = [1 cumprod( siz )];
-        ndm = length( siz );
-        for iel = 1 : nel(end)
-            if nel(end) == 1
-                sub = '';
-            else
-                sub = ')';
-                jel = iel - 1;
-                for idm = ndm : -1 : 1
-                    idx = floor( jel / nel(idm) ) + 1;
-                    sub = [',' int2str(idx) sub]; %#ok<AGROW>
-                    jel = rem( jel, nel(idm) );
-                end
-                sub(1)  = '(';
-            end
-            fprintf( '%s%s \t= (%-12.5g) + i(%-12.5g) + j(%-12.5g) + k(%-12.5g)\n', ...
-                inputname(1), sub, q(iel).e )
-        end
-    end % display
+%     function display( q ) %#ok<DISPLAY>
+%         if ~isequal( get(0,'FormatSpacing'), 'compact' )
+%             disp(' ');
+%         end
+%         if isempty( q )
+%             fprintf( '%s \t= ([]) + i([]) + j([]) + k([])\n', inputname(1) )
+%             return;
+%         end
+%         siz = size( q );
+%         nel = [1 cumprod( siz )];
+%         ndm = length( siz );
+%         for iel = 1 : nel(end)
+%             if nel(end) == 1
+%                 sub = '';
+%             else
+%                 sub = ')';
+%                 jel = iel - 1;
+%                 for idm = ndm : -1 : 1
+%                     idx = floor( jel / nel(idm) ) + 1;
+%                     sub = [',' int2str(idx) sub]; %#ok<AGROW>
+%                     jel = rem( jel, nel(idm) );
+%                 end
+%                 sub(1)  = '(';
+%             end
+%             fprintf( '%s%s \t= (%-12.5g) + i(%-12.5g) + j(%-12.5g) + k(%-12.5g)\n', ...
+%                 inputname(1), sub, q(iel).e )
+%         end
+%     end % display
 
     function d = dot( q1, q2 )
 % function d = dot( q1, q2 )

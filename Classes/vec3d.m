@@ -168,7 +168,16 @@ classdef vec3d
             % singleton expansion of vec3d arrays
             % dn = dot( p1, p2 )/( norm(p1) * norm(p2) ) is the cosine of the angle in
             % 3D space between 3D vectors p1.e and p2.e
-            d   = squeeze( sum( bsxfun( @times, double( p1 ), double( p2 )), 1 ));
+            
+            % d   = squeeze( sum( bsxfun( @times, double( p1 ), double( p2 )), 1 ));
+            
+            % New version (allow for correct formatted numeric input)
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
+                d  = [];
+                return;
+            end
+            d   = squeeze( sum( bsxfun( @times, arg1, arg2), 1 ));
         end % dot
         
         function d = double( p )
@@ -184,32 +193,10 @@ classdef vec3d
         end % isnan
         
         function p3 = minus( p1, p2 )
-            si1 = size( p1 );
-            si2 = size( p2 );
-            ne1 = prod( si1 );
-            ne2 = prod( si2 );
-            if (ne1 == 0) || (ne2 == 0)
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
                 p3  = vec3d.empty;
                 return;
-            elseif ne1 == 1
-                siz = si2;
-            elseif ne2 == 1
-                siz = si1;
-            elseif isequal( si1, si2 )
-                siz = si1;
-            else
-                error( 'vec3d:minus:baddims', ...
-                    'Matrix dimensions must agree' );
-            end
-            if isa(p1,'vec3d')
-                arg1 = [p1.e];
-            elseif isnumeric(p1)
-                arg1 = p1;
-            end
-            if isa(p2,'vec3d')
-                arg2 = [p2.e];
-            elseif isnumeric(p2)
-                arg2 = p2;
             end
             d3 = bsxfun( @minus, arg1, arg2 );
             p3 = vec3d(d3);
@@ -250,32 +237,10 @@ classdef vec3d
         end % normalize
         
         function p3 = plus( p1, p2 )
-            si1 = size( p1 );
-            si2 = size( p2 );
-            ne1 = prod( si1 );
-            ne2 = prod( si2 );
-            if (ne1 == 0) || (ne2 == 0)
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
                 p3  = vec3d.empty;
                 return;
-            elseif ne1 == 1
-                siz = si2;
-            elseif ne2 == 1
-                siz = si1;
-            elseif isequal( si1, si2 )
-                siz = si1;
-            else
-                error( 'vec3d:plus:baddims', ...
-                    'Matrix dimensions must agree' );
-            end
-            if isa(p1,'vec3d')
-                arg1 = [p1.e];
-            elseif isnumeric(p1)
-                arg1 = p1;
-            end
-            if isa(p2,'vec3d')
-                arg2 = [p2.e];
-            elseif isnumeric(p2)
-                arg2 = p2;
             end
             d3 = bsxfun( @plus, arg1, arg2 );
             p3 = vec3d(d3);
@@ -302,32 +267,10 @@ classdef vec3d
         end % power
         
         function p3 = rdivide( p1, p2 )
-            si1 = size( p1 );
-            si2 = size( p2 );
-            ne1 = prod( si1 );
-            ne2 = prod( si2 );
-            if (ne1 == 0) || (ne2 == 0)
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
                 p3  = vec3d.empty;
                 return;
-            elseif ne1 == 1
-                siz = si2;
-            elseif ne2 == 1
-                siz = si1;
-            elseif isequal( si1, si2 )
-                siz = si1;
-            else
-                error( 'vec3d:times:baddims', ...
-                    'Matrix dimensions must agree' );
-            end
-            if isa(p1,'vec3d')
-                arg1 = [p1.e];
-            elseif isnumeric(p1)
-                arg1 = p1;
-            end
-            if isa(p2,'vec3d')
-                arg2 = [p2.e];
-            elseif isnumeric(p2)
-                arg2 = p2;
             end
             d3 = bsxfun( @rdivide, arg1, arg2 );
             p3 = vec3d(d3);
@@ -375,32 +318,10 @@ classdef vec3d
         end % sqrt
         
         function p3 = times( p1, p2 )
-            si1 = size( p1 );
-            si2 = size( p2 );
-            ne1 = prod( si1 );
-            ne2 = prod( si2 );
-            if (ne1 == 0) || (ne2 == 0)
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
                 p3  = vec3d.empty;
                 return;
-            elseif ne1 == 1
-                siz = si2;
-            elseif ne2 == 1
-                siz = si1;
-            elseif isequal( si1, si2 )
-                siz = si1;
-            else
-                error( 'vec3d:times:baddims', ...
-                    'Matrix dimensions must agree' );
-            end
-            if isa(p1,'vec3d')
-                arg1 = [p1.e];
-            elseif isnumeric(p1)
-                arg1 = p1;
-            end
-            if isa(p2,'vec3d')
-                arg2 = [p2.e];
-            elseif isnumeric(p2)
-                arg2 = p2;
             end
             d3 = bsxfun( @times, arg1, arg2 );
             p3 = vec3d(d3);
@@ -528,3 +449,69 @@ else
     aout = permute( ain, perm );
 end
 end % finddim
+
+function [arg1,arg2,siz]=parse_args(p1,p2)
+% Parse arguments for plus, minus and other functions that take two inputs.
+% One of the inputs can be numeric. In that case the format can be:
+% - a scalar
+% - a single column or row with 3 elements (3d vector)
+% - a multidimensional array with size [3, size of the vec3d input]
+% Calling function should use bsxfun for binary singleton expansion.
+% 
+% Note: Not tested for numeric arrays with more than 2 dimensions.
+si1 = size( p1 );
+si2 = size( p2 );
+ne1 = prod( si1 );
+ne2 = prod( si2 );
+if (ne1 == 0) || (ne2 == 0)
+    arg1 = []; arg2 = []; siz = 0;
+    return
+elseif ne1 == 1
+    siz = si2;
+elseif ne2 == 1
+    siz = si1;
+elseif isequal( si1, si2 )
+    siz = si1;
+elseif isnumeric(p1) % Allow for numeric vector input p2 (e.g. [x y z])
+    % p1 as numeric scalar already covered with previous conditions
+    if ne1 == 3 % single vector
+        siz = si2;
+        if si1(1) ~= 3
+            p1 = p1.';
+        end
+    elseif ne1 == 3*ne2 && si1(1) == 3 % si1: [3, si2]
+        siz = si2;
+    else
+        error( 'vec3d:parse_args:baddims', ...
+        'Invalid numeric input' )
+    end
+elseif isnumeric(p2) % Allow for numeric vector input p2 (e.g. [x y z])
+    % p2 as numeric scalar already covered with previous conditions
+    if ne2 == 3 % single vector
+        siz = si1;
+        if si2(1) ~= 3
+            p2 = p2.';
+        end
+    elseif ne2 == 3*ne1 && si2(1) == 3 % si2: [3, si1]
+        siz = si1;
+    else
+        error( 'vec3d:parse_args:baddims', ...
+        'Invalid numeric input' )
+    end
+else
+    error( 'vec3d:parse_args:baddims', ...
+        'Matrix dimensions must agree' );
+end
+if isa(p1,'vec3d')
+    % arg1 = [p1.e];
+    arg1 = double(p1);
+elseif isnumeric(p1)
+    arg1 = p1;
+end
+if isa(p2,'vec3d')
+    % arg2 = [p2.e];
+    arg2 = double(p2);
+elseif isnumeric(p2)
+    arg2 = p2;
+end
+end

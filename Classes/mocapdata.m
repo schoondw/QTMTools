@@ -49,7 +49,23 @@ classdef mocapdata
                 mc.Trajectories = traj_array;
             end
             
-            % Similar for rigid bodies and skeletons
+            % Parse rigid bodies
+            if isfield(qtm,'RigidBodies')
+                rb_array = parse_rigidbodies(qtm.RigidBodies);
+                
+                mc.RBAdmin = labeladmin({rb_array.Label});
+                mc.RigidBodies = rb_array;
+            end
+            
+            % Parse skeletons
+            if isfield(qtm,'Skeletons')
+                skel_array = parse_skeletons(qtm.Skeletons);
+                
+                mc.SkelAdmin = labeladmin({skel_array.Name});
+                mc.Skeletons = skel_array;
+            end
+            
+            
             
         end
         
@@ -91,81 +107,90 @@ classdef mocapdata
 %             end
 %         end
         
-        function idx = getTrajIndex(mc,labs)
-            %function idx = getTrajIndex(mc,labs)
+        function idx = getTrajectoryIndex(mc,labs)
+            %function idx = getTrajectoryIndex(mc,labs)
             %  Get index to trajectory labels in same order as labs
             %  Input: labs can be a char, cell of char or string array
             idx = mc.TrajAdmin.LabelIndex(labs);
         end
         
-        % Parse rigid bodies from QTM mat file
-        function mc = readRigidBodies(mc,qtmmatfile)
-            %readRigidBodies Summary of this method goes here
-            %   Detailed explanation goes here
-            if nargin < 2
-                qtm = qtmread();
-            elseif ischar(qtmmatfile)
-                qtm = qtmread(qtmmatfile);
-            elseif isstruct(qtmmatfile)
-                qtm = qtmmatfile;
-            end
-            
-            if ~isfield(qtm,'RigidBodies')
-                error('mocapdata:readRigidBodies',...
-                    'QTM mat file does not contain rigid body data');
-            else
-                rbs=qtm.RigidBodies;
-            end
-            
-            r0 = mc.RBAdmin.LabelCount;
-            mc.RBAdmin = mc.RBAdmin.AppendLabels(rbs.Name); % Add to label admin
-            
-            nrb = rbs.Bodies;
-            for k=nrb:-1:1 % In reverse order for allocation
-                lab = rbs.Name{k};
-                pos = rbs.Positions(k,:,:);
-                rot = rbs.Rotations(k,:,:);
-                res = rbs.Residual(k,:,:);
-                
-                rb_index = r0 + k;
-                mc.RigidBodies(rb_index) = rigidbody(pos,rot,res,lab);
-            end
-        end
+%         % Parse rigid bodies from QTM mat file
+%         function mc = readRigidBodies(mc,qtmmatfile)
+%             %readRigidBodies Summary of this method goes here
+%             %   Detailed explanation goes here
+%             if nargin < 2
+%                 qtm = qtmread();
+%             elseif ischar(qtmmatfile)
+%                 qtm = qtmread(qtmmatfile);
+%             elseif isstruct(qtmmatfile)
+%                 qtm = qtmmatfile;
+%             end
+%             
+%             if ~isfield(qtm,'RigidBodies')
+%                 error('mocapdata:readRigidBodies',...
+%                     'QTM mat file does not contain rigid body data');
+%             else
+%                 rbs=qtm.RigidBodies;
+%             end
+%             
+%             r0 = mc.RBAdmin.LabelCount;
+%             mc.RBAdmin = mc.RBAdmin.AppendLabels(rbs.Name); % Add to label admin
+%             
+%             nrb = rbs.Bodies;
+%             for k=nrb:-1:1 % In reverse order for allocation
+%                 lab = rbs.Name{k};
+%                 pos = rbs.Positions(k,:,:);
+%                 rot = rbs.Rotations(k,:,:);
+%                 res = rbs.Residual(k,:,:);
+%                 
+%                 rb_index = r0 + k;
+%                 mc.RigidBodies(rb_index) = rigidbody(pos,rot,res,lab);
+%             end
+%         end
         
-        function idx = getRBIndex(mc,labs)
-            %function idx = getRBIndex(mc,labs)
+        function idx = getRigidBodyIndex(mc,labs)
+            %function idx = getRigidBodyIndex(mc,labs)
             %  Get index to rigid bodies in same order as labs
             %  Input: labs can be a char, cell of char or string array
             idx = mc.RBAdmin.LabelIndex(labs);
         end
         
-        function mc = readSkeletons(mc,qtmmatfile)
-            %readSkeletons Summary of this method goes here
-            %   Detailed explanation goes here
-            if nargin < 2
-                qtm = qtmread();
-            elseif ischar(qtmmatfile)
-                qtm = qtmread(qtmmatfile);
-            elseif isstruct(qtmmatfile)
-                qtm = qtmmatfile;
-            end
-            
-            if ~isfield(qtm,'Skeletons')
-                error('mocapdata:readSkeletons',...
-                    'QTM mat file does not contain skeleton data');
-            end
-            
-            skels = qtm.Skeletons;
-            nsk = length(skels);
-            
-            s0 = mc.SkelAdmin.LabelCount;
-            mc.SkelAdmin = mc.SkelAdmin.AppendLabels({skels.SkeletonName}); % Add to label admin
-            for k = nsk:-1:1
-                sk_index = s0 + k;
-                mc.Skeletons(sk_index) = skeleton(skels(k));
-            end
-            
+%         function mc = readSkeletons(mc,qtmmatfile)
+%             %readSkeletons Summary of this method goes here
+%             %   Detailed explanation goes here
+%             if nargin < 2
+%                 qtm = qtmread();
+%             elseif ischar(qtmmatfile)
+%                 qtm = qtmread(qtmmatfile);
+%             elseif isstruct(qtmmatfile)
+%                 qtm = qtmmatfile;
+%             end
+%             
+%             if ~isfield(qtm,'Skeletons')
+%                 error('mocapdata:readSkeletons',...
+%                     'QTM mat file does not contain skeleton data');
+%             end
+%             
+%             skels = qtm.Skeletons;
+%             nsk = length(skels);
+%             
+%             s0 = mc.SkelAdmin.LabelCount;
+%             mc.SkelAdmin = mc.SkelAdmin.AppendLabels({skels.SkeletonName}); % Add to label admin
+%             for k = nsk:-1:1
+%                 sk_index = s0 + k;
+%                 mc.Skeletons(sk_index) = skeleton(skels(k));
+%             end
+%             
+%         end
+        
+        function idx = getSkeletonIndex(mc,names)
+            %function idx = getSkeletonIndex(mc,names)
+            %  Get index to skeletons in same order as names
+            %  Input: names can be a char, cell of char or string array
+            idx = mc.SkelAdmin.LabelIndex(names);
         end
+        
+
         
     end
 end
@@ -204,7 +229,7 @@ function traj_array = parse_trajectories(qtmstruct)
 % - qtm data struct
 % - qtm.Trajectories.Labeled struct
 
-traj_flds = {'Count','Labels','Data','Type'};
+traj_flds = {'Count','Labels','Data','Type'}; % Required fields
 
 if isfield(qtmstruct,'Trajectories') && ...
         isfield(qtmstruct.Trajectories,'Labeled')
@@ -222,7 +247,58 @@ for k=ntr:-1:1 % In reverse order for allocation
     res = trs.Data(k,4,:);
     type = trs.Type(k,:);
     
-    tr_index = k;
-    traj_array(tr_index) = trajectory(pos,res,type,lab);
+    traj_array(k) = trajectory(pos,res,type,lab);
 end
 end % parse_trajectories
+
+
+function rb_array = parse_rigidbodies(qtmstruct)
+% Parse rigid body data
+% Input:
+% - qtm data struct
+% - qtm.RigidBodies struct
+
+rb_flds = {'Bodies','Name','Positions','Rotations','Residual'}; % Required fields
+% "Filter" not used yet, "RPYs" not needed
+
+if isfield(qtmstruct,'RigidBodies')
+    rbs=qtmstruct.RigidBodies;
+elseif sum(isfield(qtmstruct,rb_flds)) == length(rb_flds)
+    rbs = qtmstruct;
+else
+    error('mocapdata:parse_rigidbodies','Invalid input')
+end
+
+nrb = rbs.Bodies;
+for k=nrb:-1:1 % In reverse order for allocation
+    lab = rbs.Name{k};
+    pos = rbs.Positions(k,:,:);
+    rot = rbs.Rotations(k,:,:);
+    res = rbs.Residual(k,:,:);
+    
+    rb_array(k) = rigidbody(pos,rot,res,lab);
+end
+end % parse_rigidbodies
+
+
+function skel_array = parse_skeletons(qtmstruct)
+% Parse skeleton data
+% Input:
+% - qtm data struct
+% - qtm.Skeletons struct array
+
+skel_flds = {'SkeletonName','NrOfSegments','SegmentLabels','PositionData','RotationData'};
+
+if isfield(qtmstruct,'Skeletons')
+    skels=qtmstruct.Skeletons;
+elseif sum(isfield(qtmstruct,skel_flds)) == length(skel_flds)
+    skels = qtmstruct;
+else
+    error('mocapdata:parse_skeletons','Invalid input')
+end
+
+nsk = length(skels);
+for k = nsk:-1:1
+    skel_array(k) = skeleton(skels(k));
+end
+end % parse_skeletons

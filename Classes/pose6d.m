@@ -129,7 +129,7 @@ switch siz(1)
         
     case 9 % QTM unfolded rotation matrix
         qrot = quaternion.rotationmatrix(...
-            reshape(rot,3,3,[]));
+            reshape(rot,3,3,[]),1e-7); % Added tolerance for rotations deviating from det 1 (slightly non-orthonormal rigid body rotations)
         
     otherwise
         error('pose6d:parse_qtm_rot','Invalid input')

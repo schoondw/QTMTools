@@ -2441,16 +2441,17 @@ methods(Static)
         end
     end % quaternion.rotateutov
 
-    function q = rotationmatrix( R )
+    function q = rotationmatrix( R , tol )
 % function q = quaternion.rotationmatrix( R )
 % Construct quaternions from rotation (or direction cosine) matrices
 % Input:
 %  R        3x3xN rotation (or direction cosine) matrices
 % Output:
 %  q        quaternion array
+        if nargin < 2, tol = eps(16); end % Added variable tolerance to adapt the criterion for orhonormality (det deviating from 1).
         siz = [size(R) 1 1];
         if ~all( siz(1:2) == [3 3] ) || ...
-           (abs( det( R(:,:,1) ) - 1 ) > eps(16) )
+           (abs( det( R(:,:,1) ) - 1 ) > tol )
             error( 'quaternion:rotationmatrix:baddet', ...
                    'Rotation matrices must be 3x3xN with det(R) == 1' );
         end

@@ -11,7 +11,7 @@ classdef mocapdata
         Skeletons = skeleton.empty()
     end
     
-    properties (Access = private) % Label admin properties
+    properties (Access = private) % Label admin properties [EST 2020-09-01: Probably obsolete with proper subsref implementation]
         TrajAdmin = labeladmin()
         RBAdmin = labeladmin()
         SkelAdmin = labeladmin()
@@ -148,7 +148,7 @@ classdef mocapdata
 %             end
 %         end
         
-        function idx = getRigidBodyIndex(mc,labs)
+        function idx = getRigidBodyIndex(mc,labs) % EST 2020-09-01: obsolete with implementation of rigidbody/subrefs
             %function idx = getRigidBodyIndex(mc,labs)
             %  Get index to rigid bodies in same order as labs
             %  Input: labs can be a char, cell of char or string array

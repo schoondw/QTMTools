@@ -90,6 +90,39 @@ classdef vec3d
             n   = p.norm;
         end % abs
         
+        function pd = cdiff( p , dim)
+            %function pd = diff( p, ord, dim )
+            %  vec3d array difference using central difference algorithm
+            %  extrapolation of edges so that same number of elements is
+            %  returned
+            %  dim defaults to first dimension of length > 1
+            if isempty( p )
+                pd  = p;
+                return;
+            end
+            if (nargin < 2) || isempty( dim )
+                [p, dim, perm]  = finddim( p, -2 );
+            elseif dim > 1
+                ndm  = ndims( p );
+                perm = [ dim : ndm, 1 : dim-1 ];
+                p    = permute( p, perm );
+            end
+            siz = size( p );
+            if siz(1) <= 1
+                pd  = vec3d.empty;
+                return;
+            end
+            pd  = vec3d.zeros( siz );
+            for is = 2 : siz(1)-1
+                pd(is,:) = p(is+1,:)./2 - p(is-1,:)./2;
+            end
+            pd(1,:) = 3/2.*pd(2,:) - 1/2.*pd(4,:); % 3-point extrapolation of edges
+            pd(end,:) = 3/2.*pd(end-1,:) - 1/2.*pd(end-3,:);
+            if dim > 1
+                pd  = ipermute( pd, perm );
+            end
+        end % cdiff
+        
         function p3 = cross( p1, p2 )
             si1 = size( p1 );
             si2 = size( p2 );
@@ -178,6 +211,10 @@ classdef vec3d
                 return;
             end
             d   = squeeze( sum( bsxfun( @times, arg1, arg2), 1 ));
+            
+            % To do: investigate how to avoid inversion of array dimensions
+            % e.g. input nx1, nx1 becomes 1xn and vice versa
+            
         end % dot
         
         function d = double( p )

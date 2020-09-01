@@ -211,10 +211,7 @@ classdef vec3d
                 return;
             end
             d   = squeeze( sum( bsxfun( @times, arg1, arg2), 1 ));
-            
-            % To do: investigate how to avoid inversion of array dimensions
-            % e.g. input nx1, nx1 becomes 1xn and vice versa
-            
+            d = reshape( d, siz);
         end % dot
         
         function d = double( p )

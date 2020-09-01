@@ -15,6 +15,8 @@ classdef pose6d
             %   Detailed explanation goes here
             if nargin < 3, lab = ''; end
             
+            rot_tol = eps('single'); % Use higher tolerance for single precision (float) representation of 6dof rotation matrix in QTM
+            
             switch nargin
                 case 0
                     pos = vec3d();
@@ -30,7 +32,7 @@ classdef pose6d
                     if isempty(rot)
                         rot = quaternion.eye(1);
                     elseif ~isa(rot,'quaternion')
-                        rot = parse_qtm_rot(rot);
+                        rot = parse_qtm_rot(rot, rot_tol);
                     end
                     
                 otherwise
@@ -114,8 +116,10 @@ classdef pose6d
 end
 
 % --- Helper functions
-function qrot = parse_qtm_rot(rot)
+function qrot = parse_qtm_rot(rot,tol)
 % Convert qtm rotation (matrix or quaternion) to quaternion
+if nargin<2, tol=eps; end
+
 rot = squeeze(rot);
 siz = size(rot);
 
@@ -129,7 +133,7 @@ switch siz(1)
         
     case 9 % QTM unfolded rotation matrix
         qrot = quaternion.rotationmatrix(...
-            reshape(rot,3,3,[]),1e-7); % Added tolerance for rotations deviating from det 1 (slightly non-orthonormal rigid body rotations)
+            reshape(rot,3,3,[]),tol);
         
     otherwise
         error('pose6d:parse_qtm_rot','Invalid input')

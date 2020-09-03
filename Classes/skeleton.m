@@ -36,103 +36,52 @@ classdef skeleton < labeladmin2
                 % segment_index = k;
                 skel.Segments(k) = segment(pos,qrot,lab);
             end
-        end
+        end % constructor
         
-%         % Parse from QTM mat file
-%         function skel = readSkeletonData(skel,qtmmatfile,skeleton_index)
-%             %readSkeletonData Summary of this method goes here
-%             %   Detailed explanation goes here
-%             if nargin < 2
-%                 qtm=qtmread();
-%             elseif ischar(qtmmatfile)
-%                 qtm=qtmread(qtmmatfile);
-%             elseif isstruct(qtmmatfile) && isfield(qtmmatfile,'Skeletons')
-%                 qtm = qtmmatfile;
-%             elseif isstruct(qtmmatfile) && isfield(qtmmatfile,'SkeletonName')
-%                 qtm.Skeletons = qtmmatfile;
-%             end
-%             
-%             if nargin < 3
-%                 skeleton_index = 1;
-%             end
-%             
-%             if ~isfield(qtm,'Skeletons')
-%                 error('QTM mat file does not contain skeleton data');
-%             else
-%                 qsk=qtm.Skeletons(skeleton_index);
-%             end
-%             
-%             s0 = skel.SegmentAdmin.LabelCount;
-%             skel.SegmentAdmin = skel.SegmentAdmin.AppendLabels(qsk.SegmentLabels); % Add to label admin
-%             skel.Name = qsk.SkeletonName;
-%             for k=qsk.NrOfSegments:-1:1 % In reverse order for allocation
-%                 lab = qsk.SegmentLabels{k};
-%                 pos = qsk.PositionData(:,k,:);
-%                 qrot = qsk.RotationData(:,k,:);
-%                 
-%                 segment_index = s0 + k;
-%                 skel.Segments(segment_index) = segment(pos,qrot,lab);
-%             end
-%         end
-
-
-% --- Obsolete ---
-%         function showSegmentInfo(skel,lab)
-%             % if ~skel.SegmentAdmin.LabelCheck(lab)
-%             if ~skel.Segments.LabelCheck(lab)
-%                 fprintf('Segment "%s" not present.\n',lab);
-%             else
-%                 segment_index = skel.SegmentAdmin.LabelIndex(lab);
-%                 disp(skel.Segments(segment_index));
-%             end
-%         end
-%         
-%         function seg = getSegment(skel,lab)
-%             % if ~skel.SegmentAdmin.LabelCheck(lab)
-%             if ~skel.Segments.LabelCheck(lab)
-%                 error('skeleton:get_segment',...
-%                     'No segment with label ''%s'' found in skeleton object.',lab);
-%             else
-%                 segment_index = skel.Segments.LabelIndex(lab);
-%                 seg = skel.Segments(segment_index);
-%             end
-%         end
-%         
-%         function sl = SegmentList(skel)
-%             % sl = skel.SegmentAdmin.Labels;
-%             sl = skel.Segments.LabelList;
-%         end
+        % Separate overload of numArgumentsFromSubscript needed here?
+        
+        function varargout = subsref(skel,s)
+            % Overloading of subsref for skeleton class to deal with
+            % segments in skeletons
+            errid = 'skeleton:subsref';
+            switch s(1).type
+                case '.'
+                    if numel(s) > 1 && strcmp('Segments',s(1).subs) % Work around for nested labels objects (skeleton > segment)
+                        s2val = s(2).subs{1};
+                        if (ischar(s2val) || isstring(s2val) || iscell(s2val) && ~contains(':',s2val))
+                            for k = numel(skel):-1:1 % number of skeletons as nargout (somehow not specified)
+                                segm = skel(k).Segments;
+                                varargout{k} = subsref(segm,s(2:end));
+                            end
+                        else
+                            [varargout{1:nargout}] = builtin('subsref',skel,s);
+                        end
+                    else
+                        [varargout{1:nargout}] = builtin('subsref',skel,s);
+                    end
+                    
+                case '()'
+                    if numel(s) > 2  && strcmp('Segments',s(2).subs)
+                        s3val = s(3).subs{1};
+                        if (ischar(s3val) || isstring(s3val) || iscell(s3val) && ~contains(':',s3val))
+                            skel_sub=subsref@labeladmin2(skel,s(1));
+                            for k = numel(skel_sub):-1:1
+                                segm = skel_sub(k).Segments;
+                                varargout{k} = subsref(segm,s(3:end));
+                            end
+                        else
+                            [varargout{1:nargout}] = builtin('subsref',skel,s);
+                        end
+                    else
+                        [varargout{1:nargout}] = builtin('subsref',skel,s);
+                    end
+                    
+                otherwise
+                    [varargout{1:nargout}] = builtin('subsref',skel,s);
+                    
+            end
+        end % subsref
         
     end
     
 end
-
-
-% % Helper functions
-% % - Read QTM mat file
-% function qtm=qtmread(fn)
-% % Read QTM MAT file
-% if nargin==0
-%     [fname,pname] = uigetfile({'*.mat', '.mat files'}, 'Load QTM mat file');
-%     fn = [pname fname];
-% end
-% 
-% S=load(fn);
-% 
-% % Parse S
-% sflds=fieldnames(S);
-% if length(sflds)>1
-%     error('skeleton:qtmread',...
-%         ['Wrong format of file: %s\n'...
-%         'Only one variable (QTM data structure) is expected in a .mat file exported by QTM.'], fname)
-% else
-%     qtm=S.(sflds{1});
-%     if ~isstruct(qtm)
-%         error('skeleton:qtmread',...
-%             'No data structure found in file: %s', fname)
-%     elseif ~isfield(qtm,'Skeletons')
-%         error('skeleton:qtmread',...
-%             'No Skeleton data found in file: %s', fname)
-%     end
-% end
-% end % qtmread

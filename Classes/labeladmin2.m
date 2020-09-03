@@ -53,7 +53,12 @@ classdef labeladmin2
             
             errid = 'labeladmin:numArgumentsFromSubscript';
             n_out = numel(obj); % Default: total number of elements in array
+            
             switch s(1).type
+                case '.'
+                    if strcmp(s(1).subs,'LabelList') % Make it work for LabelList method
+                        n_out = 1;
+                    end
                 case '()'
                     s1val = s(1).subs{1}; % Use first index value for test
                     if ischar(s1val) || isstring(s1val) || iscell(s1val) && ~contains(':',s1val) % Check first index value
@@ -69,22 +74,18 @@ classdef labeladmin2
             
         end
         
-        function varargout = subsref(obj,s) % Move to pose6d to make available for segment objects too
+        function varargout = subsref(obj,s)
             % Overloading of subsref
-            % Allow for using labels for subscripting of rigidbody arrays
+            % Allow for using labels for subscripting of labeled objects
             
             % Adapted from example in doc "Code Patterns for subsref and subsasgn Methods"
-            
-            % To do: - fix method calls like rb_array.LabelList (workaround: rb_array.LabelList())
-            %        - fix label subreferencing for labeled objects which
-            %          contain labeled properties (e.g. skeleton.Segments('Hips'))
             
             % To do (not urgent): fix subref types like "rb_array.Position(1)" (works for rb_array.Position, or rb_array(1).Position(1))
             
             errid = 'labeladmin:subsref';
             switch s(1).type
                 case '.'
-                    [varargout{1:nargout}] = builtin('subsref',obj,s);
+                        [varargout{1:nargout}] = builtin('subsref',obj,s);
                 case '()'
                     s1val = s(1).subs{1}; % Use first index value for test
                     if ischar(s1val) || isstring(s1val) || iscell(s1val) && ~contains(':',s1val) % Check first index value

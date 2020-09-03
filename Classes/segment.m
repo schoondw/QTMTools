@@ -1,4 +1,4 @@
-classdef segment < pose6d
+classdef segment < pose6d & labeladmin2
     %segment Segment representation and methods for working with Qualisys
     %   skeleton segments.
     
@@ -13,9 +13,10 @@ classdef segment < pose6d
         function s = segment(pos,qrot,lab,par)
             if nargin < 1, pos=vec3d(); end
             if nargin < 2, qrot=quaternion(); end
-            if nargin < 3, lab=''; end
-            if nargin < 4, par=''; end
-            s@pose6d(pos,qrot,lab);
+            if nargin < 3, lab=""; end
+            if nargin < 4, par=""; end
+            s@labeladmin2(lab);
+            s@pose6d(pos,qrot);
             %s.Label = lab;
             s.Parent = par;
         end

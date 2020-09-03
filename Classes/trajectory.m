@@ -1,12 +1,15 @@
-classdef trajectory
+classdef trajectory < labeladmin2
     %trajectory Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        Label = ''
-        Position = vec3d.empty()
-        Residual = []
-        Type = []
+        % Label = ''
+%         Position = vec3d.empty()
+%         Residual = []
+%         Type = []
+        Position vec3d
+        Residual double
+        Type double
     end
     
     methods
@@ -16,7 +19,7 @@ classdef trajectory
             if nargin < 1, pos = vec3d(); end
             if nargin < 2, res = []; end
             if nargin < 3, type = []; end
-            if nargin < 4, lab = ''; end
+            if nargin < 4, lab = ""; end
             
             if ~isa(pos,'vec3d')
                 pos = vec3d(squeeze(pos));

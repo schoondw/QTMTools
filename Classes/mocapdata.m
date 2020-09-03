@@ -3,19 +3,19 @@ classdef mocapdata
     %   Detailed explanation goes here
     
     properties
-        Name = ''; % File, Timestamp, StartFrame, Frames, FrameRate
-        Frames = [];
-        FrameRate = [];
+        Name string % File, Timestamp, StartFrame, Frames, FrameRate
+        Frames = []
+        FrameRate = []
         Trajectories = trajectory.empty()
         RigidBodies = rigidbody.empty()
         Skeletons = skeleton.empty()
     end
     
-    properties (Access = private) % Label admin properties [EST 2020-09-01: Probably obsolete with proper subsref implementation]
-        TrajAdmin = labeladmin()
-        RBAdmin = labeladmin()
-        SkelAdmin = labeladmin()
-    end
+%     properties (Access = private) % Label admin properties [EST 2020-09-01: Probably obsolete with proper subsref implementation]
+%         % TrajAdmin = labeladmin()
+%         % RBAdmin = labeladmin()
+%         % SkelAdmin = labeladmin()
+%     end
     
     
     methods
@@ -45,7 +45,7 @@ classdef mocapdata
                     isfield(qtm.Trajectories,'Labeled')
                 traj_array = parse_trajectories(qtm.Trajectories.Labeled);
                 
-                mc.TrajAdmin = labeladmin({traj_array.Label});
+                % mc.TrajAdmin = labeladmin({traj_array.Label});
                 mc.Trajectories = traj_array;
             end
             
@@ -53,7 +53,7 @@ classdef mocapdata
             if isfield(qtm,'RigidBodies')
                 rb_array = parse_rigidbodies(qtm.RigidBodies);
                 
-                mc.RBAdmin = labeladmin({rb_array.Label});
+                % mc.RBAdmin = labeladmin({rb_array.Label});
                 mc.RigidBodies = rb_array;
             end
             
@@ -61,7 +61,7 @@ classdef mocapdata
             if isfield(qtm,'Skeletons')
                 skel_array = parse_skeletons(qtm.Skeletons);
                 
-                mc.SkelAdmin = labeladmin({skel_array.Name});
+                % mc.SkelAdmin = labeladmin({skel_array.Name});
                 mc.Skeletons = skel_array;
             end
             

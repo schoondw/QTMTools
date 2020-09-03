@@ -4,16 +4,18 @@ classdef pose6d
     %   Further expand help info
     
     properties
-        Label = ''                      % Label: char
-        Position = vec3d()              % Position data: vec3d array
-        Rotation = quaternion.eye(1)    % Rotation data: quaternion array
+        % Label = ''                      % Label: char
+%         Position = vec3d()              % Position data: vec3d array
+%         Rotation = quaternion.eye(1)    % Rotation data: quaternion array
+        Position vec3d                % Position data: vec3d array
+        Rotation quaternion           % Rotation data: quaternion array
     end
     
     methods
-        function p = pose6d(pos,rot,lab)
+        function p = pose6d(pos,rot)
             %pose6d Construct an instance of this class
             %   Detailed explanation goes here
-            if nargin < 3, lab = ''; end
+            % if nargin < 3, lab = ''; end
             
             rot_tol = eps('single'); % Use higher tolerance for single precision (float) representation of 6dof rotation matrix in QTM
             
@@ -22,7 +24,7 @@ classdef pose6d
                     pos = vec3d();
                     rot = quaternion.eye(1);
                     
-                case {2, 3}
+                case 2
                     if isempty(pos)
                         pos = vec3d();
                     elseif ~isa(pos,'vec3d')
@@ -68,7 +70,7 @@ classdef pose6d
                 end
             end
             
-            p.Label = lab;
+            % p.Label = lab;
             p.Position = pos;
             p.Rotation = rot;
         end

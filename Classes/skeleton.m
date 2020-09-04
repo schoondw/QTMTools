@@ -33,6 +33,10 @@ classdef skeleton < labeladmin2
             end
         end % constructor
         
+    end % methods
+    
+    methods (Hidden)
+        
         function n_out = numArgumentsFromSubscript(skel,s,~)
             % Overloading for calculating correct number of output
             % arguments for subsref, including nested reference structures
@@ -120,6 +124,6 @@ classdef skeleton < labeladmin2
             end
         end % subsref
         
-    end
+    end % hidden methods
     
 end

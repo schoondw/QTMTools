@@ -46,6 +46,10 @@ classdef labeladmin2
         function list = LabelList(obj)
             list = [obj.Label];
         end
+        
+    end % methods
+    
+    methods (Hidden)
 
         function n_out = numArgumentsFromSubscript(obj,s,~)
             % Overloading for calculating correct number of output
@@ -106,5 +110,5 @@ classdef labeladmin2
             end
         end % subsref
         
-    end
+    end % hidden methods
 end

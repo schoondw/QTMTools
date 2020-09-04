@@ -111,6 +111,60 @@ classdef trajectory < labeladmin2
             v = times(arg1,arg2);
         end
         
+        function xdata = x(trajs,sel)
+            %function xdata = x(trajs,sel)
+            %  Get x data from trajectories
+            %  Use sel to select the frames
+            data = arrayfun(@(t)(double(t.Position).'),trajs,...
+                'UniformOutput',false);
+            xyzdata = cat(3,data{:});
+            if nargin < 2
+                xdata = squeeze(xyzdata(:,1,:));
+            else
+                xdata = squeeze(xyzdata(sel,1,:));
+            end
+        end
+        
+        function ydata = y(trajs,sel)
+            %function ydata = y(trajs,sel)
+            %  Get y data from trajectories
+            %  Use sel to select the frames
+            data = arrayfun(@(t)(double(t.Position).'),trajs,...
+                'UniformOutput',false);
+            xyzdata = cat(3,data{:});
+            if nargin < 2
+                ydata = squeeze(xyzdata(:,2,:));
+            else
+                ydata = squeeze(xyzdata(sel,2,:));
+            end
+        end
+        
+        function zdata = z(trajs,sel)
+            %function zdata = z(trajs,sel)
+            %  Get z data from trajectories
+            %  Use sel to select the frames
+            data = arrayfun(@(t)(double(t.Position).'),trajs,...
+                'UniformOutput',false);
+            xyzdata = cat(3,data{:});
+            if nargin < 2
+                zdata = squeeze(xyzdata(:,3,:));
+            else
+                zdata = squeeze(xyzdata(sel,3,:));
+            end
+        end
+        
+        function xyzdata = xyz(trajs,sel)
+            %function zdata = z(trajs,sel)
+            %  Get z data from trajectories
+            %  Use sel to select the frames
+            data = arrayfun(@(t)(double(t.Position).'),trajs,...
+                'UniformOutput',false);
+            xyzdata = cat(3,data{:});
+            if nargin > 1
+                xyzdata = xyzdata(sel,:,:);
+            end
+        end
+        
     end
 end
 

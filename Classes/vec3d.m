@@ -370,6 +370,24 @@ classdef vec3d
             p3 = reshape( p3, siz );
         end
         
+        function xdata = xArray( p )
+            %function xdata = xArray ( p )
+            %  Extract X component from array
+            xdata = dot(p,[1 0 0]);
+        end
+        
+        function ydata = yArray( p )
+            %function xdata = xArray ( p )
+            %  Extract X component from array
+            ydata = dot(p,[0 1 0]);
+        end
+        
+        function zdata = zArray( p )
+            %function xdata = xArray ( p )
+            %  Extract X component from array
+            zdata = dot(p,[0 0 1]);
+        end
+        
     end %methods
     
     methods(Static)

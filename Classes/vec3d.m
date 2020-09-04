@@ -124,26 +124,17 @@ classdef vec3d
         end % cdiff
         
         function p3 = cross( p1, p2 )
-            si1 = size( p1 );
-            si2 = size( p2 );
-            ne1 = prod( si1 );
-            ne2 = prod( si2 );
-            if (ne1 == 0) || (ne2 == 0)
-                p3  = vec3d.empty;
+            %function p3 = cross( p1, p2)
+            %  Compute cross product of vec3d objects.
+            %  One of the inputs can be numerical.
+            %  Uses binary singleton expansion.
+            [arg1, arg2, siz] = parse_args(p1, p2);
+            if siz == 0
+                p3  = [];
                 return;
-            elseif ne1 == 1
-                siz = si2;
-            elseif ne2 == 1
-                siz = si1;
-            elseif isequal( si1, si2 )
-                siz = si1;
-            else
-                error( 'vec3d:cross:baddims', ...
-                    'Matrix dimensions must agree' );
             end
-            d3 = bsxfun( @cross, [p1.e], [p2.e] );
-            p3 = vec3d(d3);
-            p3 = reshape( p3, siz );
+            p3 = vec3d(bsxfun( @cross, arg1, arg2));
+            p3 = reshape( p3, siz);
         end % cross
         
         function pd = diff( p, ord, dim )

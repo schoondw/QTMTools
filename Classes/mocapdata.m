@@ -4,19 +4,13 @@ classdef mocapdata
     
     properties
         Name string % File, Timestamp, StartFrame, Frames, FrameRate
+        StartFrame = []
         Frames = []
         FrameRate = []
         Trajectories = trajectory.empty()
         RigidBodies = rigidbody.empty()
         Skeletons = skeleton.empty()
     end
-    
-%     properties (Access = private) % Label admin properties [EST 2020-09-01: Probably obsolete with proper subsref implementation]
-%         % TrajAdmin = labeladmin()
-%         % RBAdmin = labeladmin()
-%         % SkelAdmin = labeladmin()
-%     end
-    
     
     methods
         function mc = mocapdata(varargin)
@@ -37,13 +31,29 @@ classdef mocapdata
             
             % File info
             [~,mc.Name] = fileparts(qtm.File);
+            mc.StartFrame = qtm.StartFrame;
             mc.Frames = qtm.Frames;
             mc.FrameRate = qtm.FrameRate;
+
+            
+            % Frame selection (quick and dirty work around)
+            % Preliminary implementation:
+            % Frame range as second input parameter (as is)
+            % Currently not implemented for skeleton data
+            % To do: implement via parsing of property value pairs,
+            % including validation
+            frame_sel = 1:mc.Frames; % Default
+            if nargin > 1
+                frame_sel = varargin{2};
+                mc.StartFrame = mc.StartFrame + frame_sel(1) - 1;
+                mc.Frames = frame_sel(end) - frame_sel(1) + 1;
+            end
+                
             
             % Parse trajectories
             if isfield(qtm,'Trajectories') && ...
                     isfield(qtm.Trajectories,'Labeled')
-                traj_array = parse_trajectories(qtm.Trajectories.Labeled);
+                traj_array = parse_trajectories(qtm.Trajectories.Labeled, frame_sel);
                 
                 % mc.TrajAdmin = labeladmin({traj_array.Label});
                 mc.Trajectories = traj_array;
@@ -51,7 +61,7 @@ classdef mocapdata
             
             % Parse rigid bodies
             if isfield(qtm,'RigidBodies')
-                rb_array = parse_rigidbodies(qtm.RigidBodies);
+                rb_array = parse_rigidbodies(qtm.RigidBodies, frame_sel);
                 
                 % mc.RBAdmin = labeladmin({rb_array.Label});
                 mc.RigidBodies = rb_array;
@@ -59,7 +69,7 @@ classdef mocapdata
             
             % Parse skeletons
             if isfield(qtm,'Skeletons')
-                skel_array = parse_skeletons(qtm.Skeletons);
+                skel_array = parse_skeletons(qtm.Skeletons, frame_sel);
                 
                 % mc.SkelAdmin = labeladmin({skel_array.Name});
                 mc.Skeletons = skel_array;
@@ -69,84 +79,12 @@ classdef mocapdata
             
         end
         
-        % To do: replace read functions by helper parse functions called by
-        % constructor
-        
-%         % Parse labeled trajectories from QTM mat file
-%         function mc = readTrajectories(mc,qtmmatfile)
-%             %readTrajectories Summary of this method goes here
-%             %   Detailed explanation goes here
-%             if nargin < 2
-%                 qtm = qtmread();
-%             elseif ischar(qtmmatfile)
-%                 qtm = qtmread(qtmmatfile);
-%             elseif isstruct(qtmmatfile)
-%                 qtm = qtmmatfile;
-%             end
-%             
-%             if ~isfield(qtm,'Trajectories') || ...
-%                     ~isfield(qtm.Trajectories,'Labeled')
-%                 error('mocapdata:readTrajectories',...
-%                     'QTM mat file does not contain labeled trajecotry data');
-%             else
-%                 trs=qtm.Trajectories.Labeled;
-%             end
-%             
-%             t0 = mc.TrajAdmin.LabelCount;
-%             mc.TrajAdmin = mc.TrajAdmin.AppendLabels(trs.Labels); % Add to label admin
-%             
-%             ntr = trs.Count;
-%             for k=ntr:-1:1 % In reverse order for allocation
-%                 lab = trs.Labels{k};
-%                 pos = trs.Data(k,1:3,:);
-%                 res = trs.Data(k,4,:);
-%                 type = trs.Type(k,:);
-%                 
-%                 tr_index = t0 + k;
-%                 mc.Trajectories(tr_index) = trajectory(pos,res,type,lab);
-%             end
-%         end
-        
         function idx = getTrajectoryIndex(mc,labs)
             %function idx = getTrajectoryIndex(mc,labs)
             %  Get index to trajectory labels in same order as labs
             %  Input: labs can be a char, cell of char or string array
             idx = mc.TrajAdmin.LabelIndex(labs);
         end
-        
-%         % Parse rigid bodies from QTM mat file
-%         function mc = readRigidBodies(mc,qtmmatfile)
-%             %readRigidBodies Summary of this method goes here
-%             %   Detailed explanation goes here
-%             if nargin < 2
-%                 qtm = qtmread();
-%             elseif ischar(qtmmatfile)
-%                 qtm = qtmread(qtmmatfile);
-%             elseif isstruct(qtmmatfile)
-%                 qtm = qtmmatfile;
-%             end
-%             
-%             if ~isfield(qtm,'RigidBodies')
-%                 error('mocapdata:readRigidBodies',...
-%                     'QTM mat file does not contain rigid body data');
-%             else
-%                 rbs=qtm.RigidBodies;
-%             end
-%             
-%             r0 = mc.RBAdmin.LabelCount;
-%             mc.RBAdmin = mc.RBAdmin.AppendLabels(rbs.Name); % Add to label admin
-%             
-%             nrb = rbs.Bodies;
-%             for k=nrb:-1:1 % In reverse order for allocation
-%                 lab = rbs.Name{k};
-%                 pos = rbs.Positions(k,:,:);
-%                 rot = rbs.Rotations(k,:,:);
-%                 res = rbs.Residual(k,:,:);
-%                 
-%                 rb_index = r0 + k;
-%                 mc.RigidBodies(rb_index) = rigidbody(pos,rot,res,lab);
-%             end
-%         end
         
         function idx = getRigidBodyIndex(mc,labs) % EST 2020-09-01: obsolete with implementation of rigidbody/subrefs
             %function idx = getRigidBodyIndex(mc,labs)
@@ -155,42 +93,12 @@ classdef mocapdata
             idx = mc.RBAdmin.LabelIndex(labs);
         end
         
-%         function mc = readSkeletons(mc,qtmmatfile)
-%             %readSkeletons Summary of this method goes here
-%             %   Detailed explanation goes here
-%             if nargin < 2
-%                 qtm = qtmread();
-%             elseif ischar(qtmmatfile)
-%                 qtm = qtmread(qtmmatfile);
-%             elseif isstruct(qtmmatfile)
-%                 qtm = qtmmatfile;
-%             end
-%             
-%             if ~isfield(qtm,'Skeletons')
-%                 error('mocapdata:readSkeletons',...
-%                     'QTM mat file does not contain skeleton data');
-%             end
-%             
-%             skels = qtm.Skeletons;
-%             nsk = length(skels);
-%             
-%             s0 = mc.SkelAdmin.LabelCount;
-%             mc.SkelAdmin = mc.SkelAdmin.AppendLabels({skels.SkeletonName}); % Add to label admin
-%             for k = nsk:-1:1
-%                 sk_index = s0 + k;
-%                 mc.Skeletons(sk_index) = skeleton(skels(k));
-%             end
-%             
-%         end
-        
         function idx = getSkeletonIndex(mc,names)
             %function idx = getSkeletonIndex(mc,names)
             %  Get index to skeletons in same order as names
             %  Input: names can be a char, cell of char or string array
             idx = mc.SkelAdmin.LabelIndex(names);
         end
-        
-
         
     end
 end
@@ -223,7 +131,7 @@ end
 end % qtmread
 
 
-function traj_array = parse_trajectories(qtmstruct)
+function traj_array = parse_trajectories(qtmstruct, frame_sel)
 % Parse labeled trajectory data
 % Input:
 % - qtm data struct
@@ -243,16 +151,16 @@ end
 ntr = trs.Count;
 for k=ntr:-1:1 % In reverse order for allocation
     lab = trs.Labels{k};
-    pos = trs.Data(k,1:3,:);
-    res = trs.Data(k,4,:);
-    type = trs.Type(k,:);
+    pos = trs.Data(k,1:3,frame_sel);
+    res = trs.Data(k,4,frame_sel);
+    type = trs.Type(k,frame_sel);
     
     traj_array(k) = trajectory(pos,res,type,lab);
 end
 end % parse_trajectories
 
 
-function rb_array = parse_rigidbodies(qtmstruct)
+function rb_array = parse_rigidbodies(qtmstruct, frame_sel)
 % Parse rigid body data
 % Input:
 % - qtm data struct
@@ -272,16 +180,16 @@ end
 nrb = rbs.Bodies;
 for k=nrb:-1:1 % In reverse order for allocation
     lab = rbs.Name{k};
-    pos = rbs.Positions(k,:,:);
-    rot = rbs.Rotations(k,:,:);
-    res = rbs.Residual(k,:,:);
+    pos = rbs.Positions(k,:,frame_sel);
+    rot = rbs.Rotations(k,:,frame_sel);
+    res = rbs.Residual(k,:,frame_sel);
     
     rb_array(k) = rigidbody(pos,rot,res,lab);
 end
 end % parse_rigidbodies
 
 
-function skel_array = parse_skeletons(qtmstruct)
+function skel_array = parse_skeletons(qtmstruct, frame_sel)
 % Parse skeleton data
 % Input:
 % - qtm data struct

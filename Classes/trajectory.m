@@ -71,6 +71,13 @@ classdef trajectory < labeladmin2
             d = distance(tr1.Position,tr2.Position);
         end
         
+        function v = mean(trjs,varargin)
+            %function v = mean(trjs)
+            %  Calculate mean of trajectories
+            %  Output v: vec3d array
+            v = mean([trjs.Position], varargin{:});
+        end
+        
         function v = minus(tr1,tr2)
             %function v = minus(tr1,tr2)
             %  Calculate difference between trajectories

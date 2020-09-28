@@ -217,6 +217,32 @@ classdef vec3d
             l   = reshape( any( isnan( d ), 1 ), size( p ));
         end % isnan
         
+        function pm = mean( p, varargin )
+            % function pm = mean( p, dim )
+            % vec3d array mean over dimension dim
+            % dim defaults to first dimension of length > 1
+            % Allows same input arguments as Matlab built-in mean function.
+            if isempty( p )
+                pm  = p;
+                return;
+            end
+            ndm = ndims(p);
+            arg1 = 1; % Index to first input of varargin
+            dim = 2; % Default dimension for mean calculation
+            if nargin > 1
+                if isnumeric(varargin{1})
+                    dim = varargin{1} + 1; % Recalculated dim argument
+                    arg1 = 2;
+                elseif string(varargin{1}) == "all"
+                    dim = 2:ndm+1;
+                    arg1 = 2;
+                end
+            end
+            pm = shiftdim(...
+                vec3d(mean(double(p),dim,varargin{arg1:end})), 1);
+            
+        end % mean
+        
         function p3 = minus( p1, p2 )
             [arg1, arg2, siz] = parse_args(p1, p2);
             if siz == 0
@@ -254,7 +280,6 @@ classdef vec3d
             n3  = repmat( n, [3, ones(1,ndims(n)-1)] );
             ne0 = (n3 ~= 0) & (n3 ~= 1);
             d(ne0)  = d(ne0) ./ n3(ne0);
-            % p   = reshape( quaternion( d(1,:), d(2,:), d(3,:), d(4,:) ), siz );
             p   = reshape( vec3d( d ), siz );
             if nargout > 1
                 n   = shiftdim( n, 1 );

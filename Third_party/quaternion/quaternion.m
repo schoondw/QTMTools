@@ -302,7 +302,8 @@ methods
             q   = ipermute( q, perm );
         end
         if sqz
-            q   = squeeze( q );
+            % q   = squeeze( q );
+            q = shiftdim(q,1); % [Changed by Erwin Schoonderwaldt for more consistent array dimensions input and output]
         end
     end % quaternion (constructor)
 

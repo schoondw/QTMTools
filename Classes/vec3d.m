@@ -33,7 +33,7 @@ classdef vec3d
                     siz = size( varargin{1} );
                     nel = prod( siz );
                     if nel == 0
-                        p	= vec3d.empty;
+                        p	= vec3d.empty();
                         return;
                     elseif isa( varargin{1}, 'vec3d' )
                         p   = varargin{1};
@@ -69,7 +69,8 @@ classdef vec3d
                 p   = ipermute( p, perm );
             end
             if sqz
-                p   = squeeze( p );
+                % p   = squeeze( p );
+                p = shiftdim(p,1);
             end
         end %vec3d
         
@@ -249,7 +250,8 @@ classdef vec3d
                 p3  = vec3d.empty;
                 return;
             end
-            d3 = bsxfun( @minus, arg1, arg2 );
+            % d3 = bsxfun( @minus, arg1, arg2 );
+            d3 = arg1 - arg2;
             p3 = vec3d(d3);
             p3 = reshape( p3, siz );
         end % minus
@@ -292,7 +294,8 @@ classdef vec3d
                 p3  = vec3d.empty;
                 return;
             end
-            d3 = bsxfun( @plus, arg1, arg2 );
+            % d3 = bsxfun( @plus, arg1, arg2 );
+            d3 = arg1 + arg2;
             p3 = vec3d(d3);
             p3 = reshape( p3, siz );
         end % plus
@@ -548,10 +551,13 @@ elseif ne2 == 1
     siz = si1;
 elseif isequal( si1, si2 )
     siz = si1;
-elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(1)==1 && si2(2)==1 % To allow for binary singleton expansion of vec3d input
-    siz = [si2(1) si1(2)];
-elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(2)==1 && si2(1)==1
-    siz = [si1(1) si2(2)];
+elseif isa(p1,'vec3d') && isa(p2,'vec3d') && ismember(1,[si1, si2]) % To allow for binary singleton expansion of vec3d input
+    test = ones(si1)-ones(si2); % Bit of a memory expensive test. Generates error if test is not passed (sort of try catch)
+    siz = size(test);
+% elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(1)==1 && si2(2)==1 % To allow for binary singleton expansion of vec3d input
+%     siz = [si2(1) si1(2)];
+% elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(2)==1 && si2(1)==1
+%     siz = [si1(1) si2(2)];
 elseif isnumeric(p1) % Allow for numeric vector input p2 (e.g. [x y z])
     % p1 as numeric scalar already covered with previous conditions
     if ne1 == 3 % single vector

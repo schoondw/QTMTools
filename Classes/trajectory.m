@@ -71,6 +71,19 @@ classdef trajectory < labeladmin2
             d = distance(tr1.Position,tr2.Position);
         end
         
+        function v_loc = global2local(trajs,ref)
+            %function v_loc = global2local(tr,ref)
+            %   Transform trajectory to reference coordinates.
+            %   ref can be a pos6d, rigidbody or segment class
+            %   Output is a vec3d array
+            %   When the Position and Rotation properties of tr and ref
+            %   are not the same size, calculation uses binary singleton
+            %   expansion (for example tranform trajectory relative to
+            %   fixed reference).
+            v_loc = rotate_vec3d([trajs.Position]-ref.Position,...
+                ref.Rotation.inverse()); % position relative to reference
+        end
+        
         function v = mean(trjs,varargin)
             %function v = mean(trjs)
             %  Calculate mean of trajectories

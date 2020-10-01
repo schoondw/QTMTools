@@ -131,7 +131,7 @@ classdef vec3d
             %  Uses binary singleton expansion.
             [arg1, arg2, siz] = parse_args(p1, p2);
             if siz == 0
-                p3  = [];
+                p3  = vec3d.empty();
                 return;
             end
             p3 = vec3d(bsxfun( @cross, arg1, arg2));
@@ -229,7 +229,7 @@ classdef vec3d
             end
             ndm = ndims(p);
             arg1 = 1; % Index to first input of varargin
-            dim = 2; % Default dimension for mean calculation
+            dim = 2; % Default dimension for mean calculation (first dimension of vec3d object)
             if nargin > 1
                 if isnumeric(varargin{1})
                     dim = varargin{1} + 1; % Recalculated dim argument
@@ -239,8 +239,7 @@ classdef vec3d
                     arg1 = 2;
                 end
             end
-            pm = shiftdim(...
-                vec3d(mean(double(p),dim,varargin{arg1:end})), 1);
+            pm = vec3d(mean(double(p),dim,varargin{arg1:end}));
             
         end % mean
         
@@ -336,9 +335,15 @@ classdef vec3d
             %   When p and q are not the same size calculation uses binary
             %   singleton expansion (for example rotation of array p
             %   relative to fixed reference).
-            sp = size(p);
+            
+            % Calculate size and expand arrays (no full support for bsx in
+            % quaternion.RotateVector)
+            [sx, rxp, rxq] = bsx_size(size(p), size(q));
+            p = repmat(p, rxp);
+            q = repmat(q, rxq);
+            
             pr = vec3d(q.RotateVector(double(p))); % Use quaternion.RotateVector
-            pr = reshape(pr,sp);
+            pr = reshape(pr,sx);
         end
         
         function ps = sign( p )
@@ -538,6 +543,13 @@ function [arg1,arg2,siz]=parse_args(p1,p2)
 % Calling function should use bsxfun for binary singleton expansion.
 % 
 % Note: Not tested for numeric arrays with more than 2 dimensions.
+
+% Development note: redo logic making better use of bsx_size
+% Define use cases / limitations for operations
+% Meaningful use of numeric input, e.g. scalars for
+% multiplication/division, vectors for addition/subtraction
+% This may require separate parse functions
+
 si1 = size( p1 );
 si2 = size( p2 );
 ne1 = prod( si1 );
@@ -552,12 +564,9 @@ elseif ne2 == 1
 elseif isequal( si1, si2 )
     siz = si1;
 elseif isa(p1,'vec3d') && isa(p2,'vec3d') && ismember(1,[si1, si2]) % To allow for binary singleton expansion of vec3d input
-    test = ones(si1)-ones(si2); % Bit of a memory expensive test. Generates error if test is not passed (sort of try catch)
-    siz = size(test);
-% elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(1)==1 && si2(2)==1 % To allow for binary singleton expansion of vec3d input
-%     siz = [si2(1) si1(2)];
-% elseif isa(p1,'vec3d') && isa(p2,'vec3d') && si1(2)==1 && si2(1)==1
-%     siz = [si1(1) si2(2)];
+    % bsx_size could be used in a smarter way, since it could also cover
+    % some of the previous conditions.
+    siz = bsx_size(si1, si2);
 elseif isnumeric(p1) % Allow for numeric vector input p2 (e.g. [x y z])
     % p1 as numeric scalar already covered with previous conditions
     if ne1 == 3 % single vector

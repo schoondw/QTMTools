@@ -71,8 +71,8 @@ classdef trajectory < labeladmin2
             d = distance(tr1.Position,tr2.Position);
         end
         
-        function v_loc = global2local(trajs,ref)
-            %function v_loc = global2local(tr,ref)
+        function p_loc = global2local(trajs,ref)
+            %function p_loc = global2local(tr,ref)
             %   Transform trajectory to reference coordinates.
             %   ref can be a pos6d, rigidbody or segment class
             %   Output is a vec3d array
@@ -80,32 +80,32 @@ classdef trajectory < labeladmin2
             %   are not the same size, calculation uses binary singleton
             %   expansion (for example tranform trajectory relative to
             %   fixed reference).
-            v_loc = rotate_vec3d([trajs.Position]-ref.Position,...
+            p_loc = rotate_vec3d([trajs.Position]-ref.Position,...
                 ref.Rotation.inverse()); % position relative to reference
         end
         
-        function v = mean(trjs,varargin)
+        function p = mean(trjs,varargin)
             %function v = mean(trjs)
             %  Calculate mean of trajectories
             %  Output v: vec3d array
-            v = mean([trjs.Position], varargin{:});
+            p = mean([trjs.Position], varargin{:});
         end
         
-        function v = minus(tr1,tr2)
+        function p = minus(tr1,tr2)
             %function v = minus(tr1,tr2)
             %  Calculate difference between trajectories
             %  Output v: vec3d object
-            v = minus(tr1.Position, tr2.Position);
+            p = minus(tr1.Position, tr2.Position);
         end
         
-        function v = plus(tr1,tr2)
+        function p = plus(tr1,tr2)
             %function v = plus(tr1,tr2)
             %  Calculate difference between trajectories
             %  Output v: vec3d object
-            v = plus(tr1.Position, tr2.Position);
+            p = plus(tr1.Position, tr2.Position);
         end
         
-        function v = rdivide(arg1,arg2)
+        function p = rdivide(arg1,arg2)
             %function v = rdivide(arg1,arg2)
             %  Calculate difference between trajectories
             %  Output v: vec3d object
@@ -115,10 +115,10 @@ classdef trajectory < labeladmin2
             if isa(arg2,'trajectory')
                 arg2 = arg2.Position;
             end
-            v = rdivide(arg1,arg2);
+            p = rdivide(arg1,arg2);
         end
         
-        function v = times(arg1,arg2)
+        function p = times(arg1,arg2)
             %function v = times(arg1,arg2)
             %  Calculate difference between trajectories
             %  Output v: vec3d object
@@ -128,7 +128,7 @@ classdef trajectory < labeladmin2
             if isa(arg2,'trajectory')
                 arg2 = arg2.Position;
             end
-            v = times(arg1,arg2);
+            p = times(arg1,arg2);
         end
         
         function xdata = x(trajs,sel)

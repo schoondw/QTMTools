@@ -75,29 +75,6 @@ classdef mocapdata
                 mc.Skeletons = skel_array;
             end
             
-            
-            
-        end
-        
-        function idx = getTrajectoryIndex(mc,labs)
-            %function idx = getTrajectoryIndex(mc,labs)
-            %  Get index to trajectory labels in same order as labs
-            %  Input: labs can be a char, cell of char or string array
-            idx = mc.TrajAdmin.LabelIndex(labs);
-        end
-        
-        function idx = getRigidBodyIndex(mc,labs) % EST 2020-09-01: obsolete with implementation of rigidbody/subrefs
-            %function idx = getRigidBodyIndex(mc,labs)
-            %  Get index to rigid bodies in same order as labs
-            %  Input: labs can be a char, cell of char or string array
-            idx = mc.RBAdmin.LabelIndex(labs);
-        end
-        
-        function idx = getSkeletonIndex(mc,names)
-            %function idx = getSkeletonIndex(mc,names)
-            %  Get index to skeletons in same order as names
-            %  Input: names can be a char, cell of char or string array
-            idx = mc.SkelAdmin.LabelIndex(names);
         end
         
     end

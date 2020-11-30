@@ -5,8 +5,6 @@ classdef rigidbody < pose6d & labeladmin2
     %   Further expand help info
     
     properties
-%         Parent = ""     % Parent system (some type of pose6d) [string]
-%         Residual = []   % Rigid body residual
         Parent string     % Parent system (some type of pose6d) [string]
         Residual double  % Rigid body residual
     end
@@ -36,10 +34,10 @@ classdef rigidbody < pose6d & labeladmin2
             rbloc.Parent = ref.Label;
         end
         
-        function lst = getlabels(rb)
-            % Get labels of rigid bodies (array)
-            lst = [rb.Label];
-        end
+%         function lst = getlabels(rb) % Obsolete, use labeladmin2 methods instead
+%             % Get labels of rigid bodies (array)
+%             lst = [rb.Label];
+%         end
         
     end %  methods
     

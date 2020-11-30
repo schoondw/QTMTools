@@ -3,13 +3,16 @@
 % data in QTM data info window.
 
 %% Read data
-qtm_mat='Thor_ROM.mat';
+qtm_mat_file='Thor_ROM.mat';
 %qtm_mat='5_airplanes.mat'; % File
 
-% Read skeleton data
-s = skeleton().readSkeletonData(qtm_mat);
+% Read mocap data
+mc = mocapdata(qtm_mat_file);
 
-%% Extract segment data from hip and spine and do some stuff with it
+% Copy skeleton data
+s = mc.Skeletons(1);
+
+%% Apply transformation at position/rotation level
 ph = s.Segments(1).Position; % position
 qh = s.Segments(1).Rotation; % rotation (quaternion)
 
@@ -36,14 +39,14 @@ euler_s_h = -qs_h.inverse().EulerAngles('xyz')*180/pi;
 %% Same using skeleton and segment methods
 % Talking about abstraction
 
-% Extract segments from skeleton object
-sh = s.getSegment('Hips');
-ss = s.getSegment('Spine');
+% Copy segments from skeleton object
+sh = s.Segments('Hips');
+ss = s.Segments('Spine');
 
 % Transform Spine segment to Hips segment
 ss_h = global2local(ss,sh); % Spine segment relative to Hip segment
 
-% Convert to Euler angles
+% Convert to Euler angles (QTM convention: xyz)
 euler_h = sh.eulerAngles('xyz');
 euler_s = ss.eulerAngles('xyz');
 euler_s_h = ss_h.eulerAngles('xyz');

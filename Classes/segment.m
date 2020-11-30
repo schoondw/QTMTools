@@ -5,7 +5,6 @@ classdef segment < pose6d & labeladmin2
     %   Further expand help info
     
     properties
-        %Label  = ''  % Name of segment (char)
         Parent = ''  % Parent system (some type of pose6d) [char]
     end
     
@@ -17,7 +16,6 @@ classdef segment < pose6d & labeladmin2
             if nargin < 4, par=""; end
             s@labeladmin2(lab);
             s@pose6d(pos,qrot);
-            %s.Label = lab;
             s.Parent = par;
         end
         

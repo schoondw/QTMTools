@@ -4,9 +4,6 @@ classdef pose6d
     %   Further expand help info
     
     properties
-        % Label = ''                      % Label: char
-%         Position = vec3d()              % Position data: vec3d array
-%         Rotation = quaternion.eye(1)    % Rotation data: quaternion array
         Position vec3d                % Position data: vec3d array
         Rotation quaternion           % Rotation data: quaternion array
     end

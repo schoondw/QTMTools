@@ -394,22 +394,34 @@ classdef vec3d
             p3 = reshape( p3, siz );
         end
         
-        function xdata = xData( p )
+        function xdata = xData( p, index )
             %function xdata = xData ( p )
             %  Extract X component from array
-            xdata = dot(p,[1 0 0]);
+            if nargin < 2
+                xdata = dot(p, vec3d([1 0 0]));
+            else
+                xdata = dot(p(index), vec3d([1 0 0]));
+            end
         end
         
-        function ydata = yData( p )
+        function ydata = yData( p, index )
             %function ydata = xData ( p )
             %  Extract Y component from array
-            ydata = dot(p,[0 1 0]);
+            if nargin < 2
+                ydata = dot(p, vec3d([0 1 0]));
+            else
+                ydata = dot(p(index), vec3d([0 1 0]));
+            end
         end
         
-        function zdata = zData( p )
+        function zdata = zData( p, index )
             %function zdata = xData ( p )
             %  Extract Z component from array
-            zdata = dot(p,[0 0 1]);
+            if nargin < 2
+                zdata = dot(p, vec3d([0 0 1]));
+            else
+                zdata = dot(p(index), vec3d([0 0 1]));
+            end
         end
         
     end %methods

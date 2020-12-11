@@ -72,6 +72,10 @@ classdef pose6d
             p.Rotation = rot;
         end
         
+        function d = distance(p1,p2)
+            d = distance(p1.Position, p2.Position);
+        end
+        
         function p_loc = global2local(p,ref)
             %function sloc = global2local(p,ref)
             %   Transform segment data to reference segment coordinates.

@@ -7,6 +7,7 @@ classdef mocapdata
         StartFrame = []
         Frames = []
         FrameRate = []
+        Events = []
         Trajectories = trajectory.empty()
         RigidBodies = rigidbody.empty()
         Skeletons = skeleton.empty()
@@ -34,7 +35,10 @@ classdef mocapdata
             mc.StartFrame = qtm.StartFrame;
             mc.Frames = qtm.Frames;
             mc.FrameRate = qtm.FrameRate;
-
+            
+            % Events structure array (fields: Label, Frame, Time)
+            % Maybe to be turned into events class in the future (with label admin for easy selection)
+            mc.Events = qtm.Events;
             
             % Frame selection (quick and dirty work around)
             % Preliminary implementation:

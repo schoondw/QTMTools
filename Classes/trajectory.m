@@ -67,8 +67,9 @@ classdef trajectory < labeladmin2
         function d = distance(tr1,tr2)
             %function d = distance(tr1,tr2)
             %  Calculate distance between trajectories
+            %  tr1, tr2: trajectory arrays (support for binary singleton expansion)
             %  Output d: double
-            d = distance(tr1.Position,tr2.Position);
+            d = distance([tr1.Position],[tr2.Position]);
         end
         
         function p_loc = global2local(trajs,ref)
@@ -94,15 +95,17 @@ classdef trajectory < labeladmin2
         function p = minus(tr1,tr2)
             %function v = minus(tr1,tr2)
             %  Calculate difference between trajectories
+            %  tr1, tr2: trajectory arrays (support for binary singleton expansion)
             %  Output v: vec3d object
-            p = minus(tr1.Position, tr2.Position);
+            p = minus([tr1.Position], [tr2.Position]);
         end
         
         function p = plus(tr1,tr2)
             %function v = plus(tr1,tr2)
             %  Calculate difference between trajectories
+            %  tr1, tr2: trajectory arrays (support for binary singleton expansion)
             %  Output v: vec3d object
-            p = plus(tr1.Position, tr2.Position);
+            p = plus([tr1.Position], [tr2.Position]);
         end
         
         function p = rdivide(arg1,arg2)

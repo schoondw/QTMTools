@@ -38,7 +38,9 @@ classdef mocapdata
             
             % Events structure array (fields: Label, Frame, Time)
             % Maybe to be turned into events class in the future (with label admin for easy selection)
-            mc.Events = qtm.Events;
+            if isfield(qtm,'Events')
+                mc.Events = qtm.Events;
+            end
             
             % Frame selection (quick and dirty work around)
             % Preliminary implementation:

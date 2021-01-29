@@ -91,8 +91,8 @@ classdef vec3d
             n   = p.norm;
         end % abs
         
-        function pd = cdiff( p , dim)
-            %function pd = diff( p, ord, dim )
+        function pd = cdiff( p , dim, h )
+            %function pd = cdiff( p, dim, h )
             %  vec3d array difference using central difference algorithm
             %  extrapolation of edges so that same number of elements is
             %  returned
@@ -108,6 +108,7 @@ classdef vec3d
                 perm = [ dim : ndm, 1 : dim-1 ];
                 p    = permute( p, perm );
             end
+            if nargin < 3, h = 1; end
             siz = size( p );
             if siz(1) <= 1
                 pd  = vec3d.empty;
@@ -115,7 +116,7 @@ classdef vec3d
             end
             pd  = vec3d.zeros( siz );
             for is = 2 : siz(1)-1
-                pd(is,:) = p(is+1,:)./2 - p(is-1,:)./2;
+                pd(is,:) = (p(is+1,:) - p(is-1,:))./(2*h);
             end
             pd(1,:) = 3/2.*pd(2,:) - 1/2.*pd(4,:); % 3-point extrapolation of edges
             pd(end,:) = 3/2.*pd(end-1,:) - 1/2.*pd(end-3,:);
@@ -123,6 +124,40 @@ classdef vec3d
                 pd  = ipermute( pd, perm );
             end
         end % cdiff
+        
+        function pd = cdiff2( p , dim, h )
+            %function pd = cdiff2( p, dim, h )
+            %  vec3d array second order difference using central difference algorithm
+            %  extrapolation of edges so that same number of elements is
+            %  returned
+            %  dim defaults to first dimension of length > 1
+            if isempty( p )
+                pd  = p;
+                return;
+            end
+            if (nargin < 2) || isempty( dim )
+                [p, dim, perm]  = finddim( p, -2 );
+            elseif dim > 1
+                ndm  = ndims( p );
+                perm = [ dim : ndm, 1 : dim-1 ];
+                p    = permute( p, perm );
+            end
+            if nargin < 3, h = 1; end
+            siz = size( p );
+            if siz(1) <= 1
+                pd  = vec3d.empty;
+                return;
+            end
+            pd  = vec3d.zeros( siz );
+            for is = 2 : siz(1)-1
+                pd(is,:) = (p(is+1,:) + p(is-1,:) - 2.*p(is,:))./h^2;
+            end
+            pd(1,:) = 3/2.*pd(2,:) - 1/2.*pd(4,:); % 3-point extrapolation of edges
+            pd(end,:) = 3/2.*pd(end-1,:) - 1/2.*pd(end-3,:);
+            if dim > 1
+                pd  = ipermute( pd, perm );
+            end
+        end % cdiff2
         
         function p3 = cross( p1, p2 )
             %function p3 = cross( p1, p2)

@@ -97,6 +97,7 @@ classdef vec3d
             %  extrapolation of edges so that same number of elements is
             %  returned
             %  dim defaults to first dimension of length > 1
+            %  h is step size (usually 1/sample frequency)
             if isempty( p )
                 pd  = p;
                 return;

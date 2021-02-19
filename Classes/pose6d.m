@@ -78,7 +78,11 @@ classdef pose6d
         
         function p_loc = global2local(p,ref)
             %function sloc = global2local(p,ref)
-            %   Transform segment data to reference segment coordinates.
+            %   Transform pose data to reference pose coordinates. For
+            %   example, for transforming a child pose from world
+            %   coordinates to the lcs of a parent (reference). p and ref
+            %   should be expressed in the same global coordinate system.
+            % 
             %   When the Position and Rotation properties of s and sref
             %   are not the same size, calculation uses binary singleton
             %   expansion (for example tranform s relative to fixed
@@ -87,6 +91,25 @@ classdef pose6d
             p_loc.Position = rotate_vec3d(p.Position-ref.Position,...
                 ref.Rotation.inverse()); % position relative to reference
             p_loc.Rotation = ref.Rotation.inverse().*p.Rotation; % rotation relative to reference
+        end
+        
+        function p_glob = local2global(p,ref)
+            %function sloc = local2global(p,ref)
+            %   Transform pose data from reference to global coordinates.
+            %   Global coordinates means the coordinates in which the
+            %   reference  is expressed. For example, when reference is a
+            %   parent body or segment expressed in world coordinates, the
+            %   child pose will be transformed from parent to world
+            %   coordinates. 
+            % 
+            %   When the Position and Rotation properties of s and sref
+            %   are not the same size, calculation uses binary singleton
+            %   expansion (for example tranform s relative to fixed
+            %   reference). 
+            p_glob = p;
+            p_glob.Position = rotate_vec3d(p.Position,...
+                ref.Rotation) + ref.Position; % position in global coordinates
+            p_glob.Rotation = ref.Rotation.*p.Rotation; % rotation relative to reference
         end
         
         function angles = eulerAngles(p,ax)

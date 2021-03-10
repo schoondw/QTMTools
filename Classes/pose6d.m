@@ -76,6 +76,18 @@ classdef pose6d
             d = distance(p1.Position, p2.Position);
         end
         
+        function angles = eulerAngles(p,ax)
+            %function angles = eulerAngles(p,ax)
+            %   Returns Euler angles of coordinate system in degrees.
+            %   For qualisys standard, use ax = 'xyz'.
+            %   The Euler angles may differ from QTM when using a custom
+            %   Euler definition in QTM.
+            if nargin < 2, ax = 'xyz'; end
+            angles = -p.Rotation.inverse().EulerAngles(ax)*180/pi;
+            % Note: For attitude representation corresponding to QTM the
+            % rotations need to be "rewinded".
+        end
+        
         function p_loc = global2local(p,ref)
             %function sloc = global2local(p,ref)
             %   Transform pose data to reference pose coordinates. For
@@ -112,16 +124,16 @@ classdef pose6d
             p_glob.Rotation = ref.Rotation.*p.Rotation; % rotation relative to reference
         end
         
-        function angles = eulerAngles(p,ax)
-            %function angles = eulerAngles(p,ax)
-            %   Returns Euler angles of coordinate system in degrees.
-            %   For qualisys standard, use ax = 'xyz'.
-            %   The Euler angles may differ from QTM when using a custom
-            %   Euler definition in QTM.
-            if nargin < 2, ax = 'xyz'; end
-            angles = -p.Rotation.inverse().EulerAngles(ax)*180/pi;
-            % Note: For attitude representation corresponding to QTM the
-            % rotations need to be "rewinded".
+        function p_sel = selectFrames(p,index)
+            %function p_sel = selectFrames(p,index)
+            %  Select frames
+            %  No support for pose6d arrays.
+            if numel(p)>1
+                error('pose6d:selectFrames','selectFrames only supports single pose6d elements.')
+            end
+            pos = [p.Position];
+            rot = [p.Rotation];
+            p_sel = pose6d(pos(index,:),rot(index,:));
         end
         
         function uv = unitVectors(p,ax)

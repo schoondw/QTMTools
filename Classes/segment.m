@@ -27,7 +27,9 @@ classdef segment < pose6d & labeladmin2
             %   expansion (for example tranform s relative to fixed
             %   reference). 
             sloc = global2local@pose6d(s,ref);
-            sloc.Parent = ref.Label;
+            if ismember('Label',properties(ref))
+                sloc.Parent = ref.Label;
+            end
         end
         
     end %  methods

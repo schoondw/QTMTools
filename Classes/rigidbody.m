@@ -31,7 +31,9 @@ classdef rigidbody < pose6d & labeladmin2
             %   expansion (for example tranform rb relative to fixed
             %   reference).
             rbloc = global2local@pose6d(rb,ref);
-            rbloc.Parent = ref.Label;
+            if ismember('Label',properties(ref))
+                rbloc.Parent = ref.Label;
+            end
         end
         
 %         function lst = getlabels(rb) % Obsolete, use labeladmin2 methods instead

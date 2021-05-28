@@ -43,7 +43,7 @@ nmarkers = size(pos_array,2);
 rb_traj = permute(double(pos_array),[3 1 2]);
 
 if size(pose_def,1) > 1
-    error('QTMTools:fit_pose6d:invalid_input','Input argument trajs should be vec3d array (1 x markers).')
+    error('QTMTools:fit_pose6d:invalid_input','Input argument pose_def should be vec3d array (1 x markers).')
 elseif size(pose_def,2) ~= nmarkers
     error('QTMTools:fit_pose6d:invalid_input','Inconsistent number of markers (second dimension) trajs and pose_def.')
 end

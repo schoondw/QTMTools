@@ -23,7 +23,7 @@ classdef mocapdata
             if nargin<1, return; end % Return with default (empty) data
             
             % Parse data from QTM mat file
-            if ischar(varargin{1})
+            if ischar(varargin{1}) || isstring(varargin{1})
                 qtm = qtmread(varargin{1});
             elseif isstruct(varargin{1}) && ...
                     sum(isfield(varargin{1},qtm_header_flds)) == length(qtm_header_flds)

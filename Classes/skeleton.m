@@ -10,7 +10,7 @@ classdef skeleton < labeladmin2
     
     methods
         % Create skeleton object from QTM skeleton structure
-        function skel = skeleton(qsk)
+        function skel = skeleton(qsk, frame_sel)
             %skeleton Construct an instance of this class
             %   Detailed explanation goes here
             %   Input: QTM skeleton structure (single skeleton)
@@ -25,8 +25,13 @@ classdef skeleton < labeladmin2
             skel@labeladmin2(lab); % Does not work with the empty return statment above
             for k=N_segm:-1:1 % In reverse order for allocation
                 lab = qsk.SegmentLabels{k};
-                pos = qsk.PositionData(:,k,:);
-                qrot = qsk.RotationData(:,k,:);
+                if nargin < 2
+                    pos = qsk.PositionData(:,k,:);
+                    qrot = qsk.RotationData(:,k,:);
+                else
+                    pos = qsk.PositionData(:,k,frame_sel);
+                    qrot = qsk.RotationData(:,k,frame_sel);
+                end
                 
                 % segment_index = k;
                 skel.Segments(k) = segment(pos,qrot,lab);

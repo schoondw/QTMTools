@@ -190,6 +190,6 @@ end
 
 nsk = length(skels);
 for k = nsk:-1:1
-    skel_array(k) = skeleton(skels(k));
+    skel_array(k) = skeleton(skels(k), frame_sel);
 end
 end % parse_skeletons

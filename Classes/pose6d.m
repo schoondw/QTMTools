@@ -14,7 +14,8 @@ classdef pose6d
             %   Detailed explanation goes here
             % if nargin < 3, lab = ''; end
             
-            rot_tol = eps('single'); % Use higher tolerance for single precision (float) representation of 6dof rotation matrix in QTM
+            % rot_tol = eps('single'); % Use higher tolerance for single precision (float) representation of 6dof rotation matrix in QTM
+            rot_tol = 1e-3;
             
             switch nargin
                 case 0

@@ -323,6 +323,12 @@ classdef vec3d
             end
         end % normalize
         
+        function plot( p, varargin )
+            %function plot( p, ... )
+            %   Plot XYZ data of vec3d array
+            plot([p.xData, p.yData, p.zData], varargin{:});
+        end
+        
         function p3 = plus( p1, p2 )
             [arg1, arg2, siz] = parse_args(p1, p2);
             if siz == 0

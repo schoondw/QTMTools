@@ -1,4 +1,4 @@
-%% Test transformations
+%% Example skeleton segment transformations
 % Read info from QTM exported MAT file and compare output to skeleton
 % data in QTM data info window.
 
@@ -31,3 +31,10 @@ euler_spine_local = s_spine_local.eulerAngles('xyz');
 
 % Compare results with segment data in the QTM data info window (global and
 % local coordinates)
+
+figure
+subplot 211
+plot(euler_spine')
+
+subplot 212
+plot(euler_spine_local')

@@ -21,7 +21,7 @@ methods(trajectory)
 help trajectory/mean
 
 
-%% Label admin functions (same for rigid bodies, skeletons, segments)
+%% Label admin class (same for rigid bodies, skeletons, segments)
 % List
 mc.Trajectories.LabelList
 

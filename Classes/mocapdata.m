@@ -4,6 +4,7 @@ classdef mocapdata
     
     properties
         Name string % File, Timestamp, StartFrame, Frames, FrameRate
+        Timestamp = datetime.empty()
         StartFrame = []
         Frames = []
         FrameRate = []
@@ -32,6 +33,10 @@ classdef mocapdata
             
             % File info
             [~,mc.Name] = fileparts(qtm.File);
+            ts_sep = regexp(qtm.Timestamp, '\t');
+            mc.Timestamp = datetime(qtm.Timestamp(1:ts_sep-1),...
+                'InputFormat','yyyy-MM-dd, HH:mm:ss.SSS',...
+                'Format','yyyy-MM-dd HH:mm:ss.SSS');
             mc.StartFrame = qtm.StartFrame;
             mc.Frames = qtm.Frames;
             mc.FrameRate = qtm.FrameRate;

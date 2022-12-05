@@ -3,15 +3,19 @@ classdef mocapdata
     %   Detailed explanation goes here
     
     properties
-        Name string % File, Timestamp, StartFrame, Frames, FrameRate
-        Timestamp = datetime.empty()
-        StartFrame = []
-        Frames = []
-        FrameRate = []
-        Events = []
-        Trajectories = trajectory.empty()
-        RigidBodies = rigidbody.empty()
-        Skeletons = skeleton.empty()
+        Name string                         % Trial name
+        Timestamp = datetime.empty()        % Computer time at start of trial
+        StartFrame = []                     % First frame of trial, when cropped
+        Frames = []                         % Number of frames
+        FrameRate = []                      % Frame rate
+        Events = []                         % Events (struct)
+        Trajectories = trajectory.empty()   % Trajectories (type: trajectory)
+        RigidBodies = rigidbody.empty()     % RigidBodies (type: rigid_body)
+        Skeletons = skeleton.empty()        % Skeletons (type: skeleton)
+    end
+    
+    properties (Dependent)
+        Time double                         % Time array (seconds from start of trial)
     end
     
     methods
@@ -36,7 +40,8 @@ classdef mocapdata
             ts_sep = regexp(qtm.Timestamp, '\t');
             mc.Timestamp = datetime(qtm.Timestamp(1:ts_sep-1),...
                 'InputFormat','yyyy-MM-dd, HH:mm:ss.SSS',...
-                'Format','yyyy-MM-dd HH:mm:ss.SSS');
+                'Format','yyyy-MM-dd HH:mm:ss.SSS',...
+                'TimeZone','local');
             mc.StartFrame = qtm.StartFrame;
             mc.Frames = qtm.Frames;
             mc.FrameRate = qtm.FrameRate;
@@ -88,7 +93,12 @@ classdef mocapdata
             
         end
         
+        function t_array = get.Time(obj)
+            t_array = ((obj.StartFrame:obj.Frames)'-1)./obj.FrameRate;
+        end
+    
     end
+    
 end
 
 

@@ -492,7 +492,7 @@ classdef vec3d
         end % vec3d.zeros
         
         function p = ones( varargin )
-            % function q = vec3d.zeros( siz )
+            % function q = vec3d.ones( siz )
             if isempty( varargin )
                 siz = [1 1];
             elseif numel( varargin ) > 1
@@ -513,7 +513,7 @@ classdef vec3d
         end % vec3d.ones
         
         function p = nan( varargin )
-            % function q = vec3d.zeros( siz )
+            % function q = vec3d.nan( siz )
             if isempty( varargin )
                 siz = [1 1];
             elseif numel( varargin ) > 1

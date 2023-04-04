@@ -57,7 +57,7 @@ Contains rigid body data:
 - Label (string, from labeladmin2)
 
 Methods:
-- global2local: transform rigid body to reference coordinate sytem. Overloading pose6d:local2global.
+- global2local: transform rigid body to reference coordinate sytem. Overloading pose6d:global2local.
 
 ### skeleton
 Skeleton data class.
@@ -76,7 +76,7 @@ Contains segment data:
 - Label (string, from labeladmin2)
 
 Methods:
-- global2local: transform segment to reference coordinate system. Overloading pose6d:local2global.
+- global2local: transform segment to reference coordinate system. Overloading pose6d:global2local.
 
 ## Data representation classes
 

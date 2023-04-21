@@ -10,10 +10,13 @@ Mocap data includes:
 Examples of use.
 
 Read QTM mat file:
+
 `mc = mocapdata('myfile.mat')`
 
 Indexing:
+
 Retrieve trajectory with label "RightElbow" using the label as index (see labeladmin2 for more info).
+
 `relb = mc.Trajectories("RightElbow");`
 
 Transform segment from global to parent:
@@ -27,7 +30,7 @@ For more example scripts, see the folder "Examples".
 Note: Other types of data, for example analog data, are currently not implemented.
 
 ## Install
-Add the folders including subfolders to the Matlab path, for example using *addpath(genpath(...))*.
+Add the folders including subfolders to the Matlab path, for example using `addpath(genpath(...))`.
 
 ## Mocap data classes
 
